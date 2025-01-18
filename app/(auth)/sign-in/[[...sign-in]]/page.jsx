@@ -3,7 +3,7 @@ import * as Clerk from "@clerk/elements/common";
 import * as SignIn from "@clerk/elements/sign-in";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,21 +25,31 @@ import google from "../../../../public/google.svg";
 import facebook from "../../../../public/facebook.svg";
 
 export default function SignInPage() {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const router = useRouter();
+  const [showSignIn, setShowSignIn] = useState(false);
 
-  // Handle redirection if user is already signed in
+  // Only show sign-in content when auth is loaded and user is not signed in
   useEffect(() => {
-    if (isSignedIn) {
-      router.push("/dashboard"); // Replace with your desired redirect path
+    if (isLoaded) {
+      if (isSignedIn) {
+        router.push("/dashboard");
+      } else {
+        setShowSignIn(true);
+      }
     }
-  }, [isSignedIn, router]);
+  }, [isSignedIn, isLoaded, router]);
 
   // Handle successful sign-in
   const handleSignInComplete = () => {
-    router.push("/dashboard"); // Replace with your desired redirect path
-    router.refresh(); // Refresh the page to ensure all components are properly loaded
+    router.push("/dashboard");
+    router.refresh();
   };
+
+  // Show loading state or empty div while checking auth status
+  if (!showSignIn) {
+    return <div className="min-h-screen bg-secondary-50"></div>;
+  }
 
   return (
     <>
