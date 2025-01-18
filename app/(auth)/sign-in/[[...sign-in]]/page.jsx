@@ -58,7 +58,7 @@ export default function SignInPage() {
       <div className="min-h-screen bg-secondary-50 flex items-center justify-center">
         <div className="animate-pulse text-center flex flex-col items-center justify-center ">
           <Image
-            className="w-[50px] max-md:w-[35px] max-md:h-[35px] h-[50px]"
+            className="w-[50px] max-md:w-[38px] max-md:h-[38px] h-[50px]"
             src={logo}
             alt="logo"
           />
