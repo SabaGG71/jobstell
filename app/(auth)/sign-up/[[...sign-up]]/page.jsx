@@ -169,7 +169,6 @@ export default function SignUpPage() {
                           </CardContent>
                           <CardFooter>
                             <div className="grid w-full gap-y-4">
-                              <SignUp.Captcha className="empty:hidden mb-4 mt-[-20px]" />
                               <SignUp.Action submit asChild>
                                 <Button
                                   className="w-full h-[53px] box-shadow mt-[-25px] rounded-full bg-primary-500 px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"

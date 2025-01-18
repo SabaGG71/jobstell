@@ -161,8 +161,6 @@ export default function SignInPage() {
                             <p className="flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 mt-3 font-[600] before:bg-border after:h-px after:flex-1 after:bg-border">
                               ✶ or
                             </p>
-                            {/* CAPTCHA Widget */}
-                            <div id="clerk-captcha"></div>
 
                             <Clerk.Field
                               name="identifier"
@@ -200,8 +198,6 @@ export default function SignInPage() {
                               </Clerk.Input>
                               <Clerk.FieldError className="block text-sm text-destructive" />
                             </Clerk.Field>
-
-                            <div id="clerk-captcha" className="mt-4"></div>
                           </CardContent>
 
                           <CardFooter>
