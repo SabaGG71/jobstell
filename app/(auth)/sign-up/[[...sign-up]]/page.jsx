@@ -2,7 +2,7 @@
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
 import Link from "next/link";
-import { memo, useState } from "react";
+import { memo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import energy from "../../../../public/energy.svg";
@@ -27,7 +27,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-// Memoized background pattern component
 const BackgroundPattern = memo(() => (
   <div
     className="absolute max-xl:w-full max-lg:left-0 right-[-5px] top-0 w-[50%] h-screen"
@@ -42,7 +41,6 @@ const BackgroundPattern = memo(() => (
 ));
 BackgroundPattern.displayName = "BackgroundPattern";
 
-// Memoized OTP Input component
 const OTPInput = memo(({ value, status }) => (
   <div
     data-status={status}
@@ -64,8 +62,49 @@ const OTPInput = memo(({ value, status }) => (
 ));
 OTPInput.displayName = "OTPInput";
 
+// Custom CAPTCHA component
+const CaptchaWidget = memo(() => {
+  useEffect(() => {
+    // Create CAPTCHA container if it doesn't exist
+    if (!document.getElementById("clerk-captcha")) {
+      const captchaDiv = document.createElement("div");
+      captchaDiv.id = "clerk-captcha";
+      document.body.appendChild(captchaDiv);
+    }
+  }, []);
+
+  return <div id="clerk-captcha" className="mt-4" />;
+});
+CaptchaWidget.displayName = "CaptchaWidget";
+
 export default function SignUpPage() {
   const [isShown, setIsShown] = useState(false);
+  const [resendTimeout, setResendTimeout] = useState(0);
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [captchaVerified, setCaptchaVerified] = useState(false);
+
+  const handleResendCode = () => {
+    if (resendTimeout > 0) return;
+
+    setResendTimeout(30);
+    setVerificationSent(true);
+
+    const timer = setInterval(() => {
+      setResendTimeout((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  // Handle CAPTCHA verification
+  const handleCaptchaVerification = (token) => {
+    setCaptchaVerified(true);
+  };
+
   return (
     <section className="bg-secondary-50 overflow-x-hidden">
       <div className="lg:grid max-lg:h-screen max-lg:items-center lg:min-h-screen relative top-0 left-0 xl:grid-cols-12">
@@ -184,7 +223,7 @@ export default function SignUpPage() {
                             >
                               <Input />
                             </Clerk.Input>
-                            <Clerk.FieldError className="block text-sm text-destructive" />
+                            <Clerk.FieldError className="block text-sm text-destructive mt-1" />
                           </Clerk.Field>
                           <Clerk.Field name="password" className="space-y-2">
                             <Clerk.Label asChild>
@@ -220,6 +259,9 @@ export default function SignUpPage() {
                             </div>
                             <Clerk.FieldError className="block text-sm text-red-400 font-[600] mt-[8px]" />
                           </Clerk.Field>
+
+                          {/* Add CAPTCHA widget */}
+                          <CaptchaWidget />
                         </CardContent>
                         <CardFooter>
                           <div className="grid w-full gap-y-4">
@@ -253,22 +295,28 @@ export default function SignUpPage() {
                               Verify your email
                             </CardTitle>
                             <CardDescription className="text-base">
-                              Use the verification link sent to your email
-                              address
+                              {verificationSent
+                                ? "New verification code sent to your email"
+                                : "Use the verification link sent to your email address"}
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="grid gap-y-4">
                             <div className="grid items-center justify-center gap-y-2">
                               <Clerk.Field name="code" className="space-y-2">
                                 <Clerk.Label className="sr-only">
-                                  Email address
+                                  Verification Code
                                 </Clerk.Label>
                                 <div className="flex rounded-full justify-center text-center">
                                   <Clerk.Input
                                     type="otp"
                                     className="flex justify-center has-[:disabled]:opacity-50"
                                     autoSubmit
-                                    render={OTPInput}
+                                    render={(props) => (
+                                      <OTPInput
+                                        value={props.value}
+                                        status={props.status}
+                                      />
+                                    )}
                                   />
                                 </div>
                                 <Clerk.FieldError>
@@ -284,21 +332,19 @@ export default function SignUpPage() {
                                 </Clerk.FieldError>
                               </Clerk.Field>
                               <SignUp.Action
-                                asChild
                                 resend
-                                className="text-muted-foreground"
-                                fallback={({ resendableAfter }) => (
-                                  <Button variant="link" disabled>
-                                    Didn&apos;t receive a code? Resend (
-                                    <span className="tabular-nums">
-                                      {resendableAfter}
-                                    </span>
-                                    )
-                                  </Button>
-                                )}
+                                onClick={handleResendCode}
+                                disabled={resendTimeout > 0}
+                                asChild
                               >
-                                <Button type="button" variant="link">
-                                  Didn&apos;t receive a code? Resend
+                                <Button
+                                  variant="link"
+                                  className="text-primary-500 hover:text-primary-600"
+                                  disabled={resendTimeout > 0}
+                                >
+                                  {resendTimeout > 0
+                                    ? `Wait ${resendTimeout}s to resend code`
+                                    : "Didn't receive a code? Resend"}
                                 </Button>
                               </SignUp.Action>
                             </div>
