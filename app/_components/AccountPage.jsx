@@ -14,11 +14,12 @@ export default function AccountAvatar() {
 
   const handleSignOut = async () => {
     try {
-      await signOut();
-      // Redirect to home page after successful sign out
+      // First navigate to home page
       router.push("/");
-      // Force a router refresh to ensure all auth states are updated
-      router.refresh();
+      // Then perform sign out
+      await signOut();
+      // Force a hard refresh of the page to clear any cached states
+      window.location.href = "/";
     } catch (error) {
       console.error("Error signing out:", error);
     }

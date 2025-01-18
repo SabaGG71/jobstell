@@ -204,7 +204,7 @@ export default function SignInPage() {
                             <div className="grid w-full gap-y-4">
                               <SignIn.Action submit asChild>
                                 <Button
-                                  className="w-full rounded-full bg-primary-500 mt-[-55px] h-[53px] px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"
+                                  className="w-full rounded-full bg-primary-500 mt-[-30px] h-[53px] px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"
                                   disabled={isGlobalLoading}
                                 >
                                   Sign In

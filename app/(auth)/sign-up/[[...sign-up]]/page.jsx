@@ -191,35 +191,6 @@ export default function SignUpPage() {
                         </Card>
                       </SignUp.Step>
 
-                      <SignUp.Step name="continue">
-                        <Card className="w-full sm:w-96">
-                          <CardHeader>
-                            <CardTitle>Continue registration</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <Clerk.Field name="username" className="space-y-2">
-                              <Clerk.Label>
-                                <Label>Username</Label>
-                              </Clerk.Label>
-                              <Clerk.Input type="text" required asChild>
-                                <Input />
-                              </Clerk.Input>
-
-                              <Clerk.FieldError className="block text-base text-destructive" />
-                            </Clerk.Field>
-                          </CardContent>
-                          <CardFooter>
-                            <div className="grid w-full gap-y-4">
-                              <SignUp.Action submit asChild>
-                                <Button disabled={isGlobalLoading}>
-                                  Continue
-                                </Button>
-                              </SignUp.Action>
-                            </div>
-                          </CardFooter>
-                        </Card>
-                      </SignUp.Step>
-
                       <SignUp.Step name="verifications">
                         <SignUp.Strategy name="email_code">
                           <Card className="w-full relative z-50 rounded-3xl py-3 max-md:ml-[-12px] sm:w-96 shadow-sm border border-[#212121]/20 text-center">
