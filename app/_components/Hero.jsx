@@ -5,6 +5,7 @@ import { DotBackgroundDemo } from "./DotBackgroundDemo";
 import { InfiniteMovingCardsDemo } from "./InfiniteMovingCardsDemo";
 import { InfiniteMovingCardsDemo2 } from "./InfiniteMovingCardsDemo2";
 import { Button } from "../../components/ui/button";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -27,10 +28,12 @@ export default function Hero() {
           real-time interview simulations.
         </p>
         <div className="text-center flex flex-col md:flex-row justify-center items-center max-md:mt-[43px] gap-3 mt-7">
-          <button className="flex max-md:py-2 py-3 hover:translate-y-[-2px] duration-300 transition-all items-center gap-2 bg-gradient-to-b from-primary-400 to-primary-500 box-shadow text-white px-[22px] rounded-full font-[400] text-lg xl:ml-2">
-            Get Started
-            <Image width={22} height={22} src={energy} alt="energy" />
-          </button>
+          <Link href="/dashboard">
+            <button className="flex max-md:py-2 py-3 hover:translate-y-[-2px] duration-300 transition-all items-center gap-2 bg-gradient-to-b from-primary-400 to-primary-500 box-shadow text-white px-[22px] rounded-full font-[400] text-lg xl:ml-2">
+              Get Started
+              <Image width={22} height={22} src={energy} alt="energy" />
+            </button>
+          </Link>
           <button className="flex max-md:py-2 max-md:px-4 items-center gap-[9px] py-3 border border-secondary-300  hover:bg-secondary-50  transition-all duration-300 hover:translate-y-[-3px]  px-[22px] rounded-full bg-white text-secondary-900 font-[400] text-lg max-md:text-[17px] max-md:mt-1">
             <Image width={20} height={20} src={play} alt="play-btn" />
             Listen To Screen
