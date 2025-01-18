@@ -3,13 +3,31 @@
 import { useUser, useClerk } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
-export default function AccountAvatar() {
+export default function AccountNavigation() {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
+  const router = useRouter();
 
-  if (!isLoaded || !user) return null;
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
+  const handleSignUp = () => {
+    router.push("/sign-up");
+  };
+
+  // Show loading state or nothing while checking auth state
+  if (!isLoaded) return null;
+
+  // If user is logged in, show avatar and sign out button
   return (
     <div className="flex items-center space-x-4 p-4 bg-background shadow-md rounded-md">
       <div className="flex flex-col">
@@ -29,7 +47,7 @@ export default function AccountAvatar() {
         </div>
         <Button
           variant="outline"
-          onClick={() => signOut()}
+          onClick={handleSignOut}
           className="mt-1 text-[14px]"
         >
           Sign Out

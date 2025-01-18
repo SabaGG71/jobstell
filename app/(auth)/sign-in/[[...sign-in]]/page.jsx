@@ -106,7 +106,7 @@ export default function SignInPage() {
                           />
                         </div>
 
-                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-8 shadow-lg sm:px-10 sm:w-[500px]">
+                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-3 shadow-lg sm:px-10 sm:w-[500px]">
                           <CardHeader className="text-center flex flex-col justify-center items-center gap-5">
                             <Image
                               className="h-12 w-12 mb-[-20px] sm:h-14 sm:w-14"

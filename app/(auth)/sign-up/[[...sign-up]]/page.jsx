@@ -73,7 +73,7 @@ export default function SignUpPage() {
                   {(isGlobalLoading) => (
                     <>
                       <SignUp.Step name="start">
-                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-8 shadow-lg sm:px-10 sm:w-[500px]">
+                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-3 shadow-lg sm:px-10 sm:w-[500px]">
                           <CardHeader className="relative flex flex-col items-center justify-center text-center">
                             <Link href="/">
                               <Image
