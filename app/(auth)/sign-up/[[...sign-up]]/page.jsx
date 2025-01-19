@@ -31,11 +31,15 @@ import { cn } from "@/lib/utils";
 
 // Loading spinner component with improved styling
 const LoadingSpinner = () => (
-  <div className="flex min-h-screen items-center justify-center bg-secondary-50">
-    <div className="flex flex-col items-center gap-4">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
-      <p className="text-secondary-600 text-lg font-medium">
-        Preparing your experience...
+  <div className="min-h-screen bg-secondary-50 flex items-center justify-center">
+    <div className="animate-pulse text-center flex flex-col items-center justify-center">
+      <Image
+        className="w-[50px] max-md:w-[38px] max-md:h-[3px] h-[50px]"
+        src={logo}
+        alt="logo"
+      />
+      <p className="text-[35px] max-md:text-[28px] mt-4 font-[700]">
+        Loading The Portal...
       </p>
     </div>
   </div>
@@ -209,7 +213,7 @@ export default function SignUpPage() {
                     <>
                       {/* Initial signup step */}
                       <SignUp.Step name="start">
-                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-3 shadow-lg sm:px-10 sm:w-[500px]">
+                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-2 py-2 shadow-lg sm:px-10 sm:w-[500px]">
                           <CardHeader className="relative flex flex-col items-center justify-center text-center">
                             <Link href="/">
                               <Image
@@ -341,7 +345,7 @@ export default function SignUpPage() {
                               {/* Submit button */}
                               <SignUp.Action submit asChild>
                                 <Button
-                                  className="w-full h-[53px] box-shadow mt-[-25px] rounded-full bg-primary-500 px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"
+                                  className="w-full h-[53px] box-shadow mt-[-62px] rounded-full bg-primary-500 px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"
                                   disabled={isGlobalLoading}
                                 >
                                   Continue
@@ -352,10 +356,11 @@ export default function SignUpPage() {
                               {/* Sign in link */}
                               <Button variant="link" asChild>
                                 <Clerk.Link
-                                  className="pt-3 text-center text-sm text-zinc-500 sm:text-base"
+                                  className="mt-[-8px] text-center text-sm text-zinc-500 sm:text-base"
                                   navigate="sign-in"
                                 >
-                                  Already have an account? Sign in
+                                  Already have an account?{" "}
+                                  <span className="font-[600]">Sign in</span>
                                 </Clerk.Link>
                               </Button>
                             </div>
