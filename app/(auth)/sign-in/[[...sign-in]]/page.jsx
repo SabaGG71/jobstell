@@ -27,7 +27,7 @@ const LoadingScreen = () => (
   <div className="min-h-screen bg-secondary-50 flex items-center justify-center">
     <div className="animate-pulse text-center flex flex-col items-center justify-center">
       <Image
-        className="w-[50px] max-md:w-[38px] max-md:h-[38px] h-[50px]"
+        className="w-[50px] max-md:w-[38px] max-md:h-[3px] h-[50px]"
         src={logo}
         alt="logo"
       />
@@ -45,7 +45,7 @@ const ErrorMessage = ({ message, isRegistrationError = false }) => (
 );
 
 export default function SignInPage() {
-  const { isSignedIn, isLoaded, signOut } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const { signIn, setActive, isLoading } = useSignIn();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
@@ -55,12 +55,12 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isRegistrationError, setIsRegistrationError] = useState(false);
-  const [pendingVerification, setPendingVerification] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Check for error parameter in URL
   useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
@@ -69,11 +69,13 @@ export default function SignInPage() {
       if (signUpRequired === "true") {
         setError("Please sign up first");
         setIsRegistrationError(true);
+        // Clean up URL
         window.history.replaceState({}, "", "/sign-in");
       }
     }
   }, []);
 
+  // Handle authentication state changes and redirects
   useEffect(() => {
     if (!mounted || !isLoaded) return;
 
@@ -86,16 +88,11 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     try {
       if (!signIn) return;
-
-      if (isSignedIn) {
-        await signOut();
-      }
-
       await signIn.authenticateWithRedirect({
         strategy: "oauth_google",
-        redirectUrl: `${window.location.origin}/sign-in`,
+        redirectUrl: `${window.location.origin}/sign-in?signup_required=true`,
         afterSignInUrl: "/dashboard",
-        afterSignUpUrl: "/verify-email",
+        afterSignUpUrl: "/sign-up",
       });
     } catch (err) {
       console.error("Google sign in error:", err);
@@ -107,16 +104,11 @@ export default function SignInPage() {
   const handleFacebookSignIn = async () => {
     try {
       if (!signIn) return;
-
-      if (isSignedIn) {
-        await signOut();
-      }
-
       await signIn.authenticateWithRedirect({
         strategy: "oauth_facebook",
-        redirectUrl: `${window.location.origin}/sign-in`,
+        redirectUrl: `${window.location.origin}/sign-in?signup_required=true`,
         afterSignInUrl: "/dashboard",
-        afterSignUpUrl: "/verify-email",
+        afterSignUpUrl: "/sign-up",
       });
     } catch (err) {
       console.error("Facebook sign in error:", err);
@@ -133,10 +125,6 @@ export default function SignInPage() {
     try {
       if (!signIn) return;
 
-      if (isSignedIn) {
-        await signOut();
-      }
-
       const result = await signIn.create({
         identifier: email,
         password,
@@ -146,9 +134,6 @@ export default function SignInPage() {
         await setActive({ session: result.createdSessionId });
         setRedirecting(true);
         router.push("/dashboard");
-      } else if (result.status === "needs_verification") {
-        setPendingVerification(true);
-        router.push("/verify-email");
       }
     } catch (err) {
       console.error("Sign in error:", err);
@@ -156,9 +141,6 @@ export default function SignInPage() {
       if (err.errors?.[0]?.message?.includes("no user")) {
         setError("This email is not registered.");
         setIsRegistrationError(true);
-      } else if (err.errors?.[0]?.message?.includes("single session mode")) {
-        setError("Please sign out of other sessions before signing in.");
-        setIsRegistrationError(false);
       } else {
         setError("Invalid email or password. Please try again.");
         setIsRegistrationError(false);
@@ -166,11 +148,13 @@ export default function SignInPage() {
     }
   };
 
+  // Show loading screen while initializing
   if (!mounted || !isLoaded || redirecting) {
     return <LoadingScreen />;
   }
 
-  if (isSignedIn || pendingVerification) {
+  // Return null if already signed in (redirect handled by effect)
+  if (isSignedIn) {
     return null;
   }
 
@@ -185,6 +169,7 @@ export default function SignInPage() {
         />
       </Link>
       <div className="lg:grid max-lg:h-screen max-lg:items-center lg:min-h-screen relative top-0 left-0 xl:grid-cols-12">
+        {/* Left Section */}
         <section className="relative flex items-end max-xl:h-0 bg-[#0f0f0f] xl:h-full xl:col-span-6">
           <Image
             className="absolute xl:flex hidden z-40 w-full top-0 inset-0 h-screen object-cover masky-bg-portal opacity-80"
@@ -204,6 +189,7 @@ export default function SignInPage() {
           </div>
         </section>
 
+        {/* Right Section */}
         <main className="flex min-h-screen w-full max-md:mt-0 items-center justify-center p-4 lg:col-span-7 lg:p-16 xl:col-span-6">
           <div className="grid w-full grow items-center px-4 sm:justify-center">
             <div className="h-screen z-0 w-full absolute top-0 right-0">
@@ -336,6 +322,7 @@ export default function SignInPage() {
                         Sign In
                         <Image src={sign} alt="arrow-right" />
                       </Button>
+
                       <Button variant="link" size="sm" asChild>
                         <Link
                           href="/sign-up"

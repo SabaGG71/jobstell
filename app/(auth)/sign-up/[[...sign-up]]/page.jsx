@@ -1,6 +1,8 @@
 "use client";
 import * as Clerk from "@clerk/elements/common";
 import * as SignUp from "@clerk/elements/sign-up";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { memo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +29,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
+// Loading spinner component with improved styling
+const LoadingSpinner = () => (
+  <div className="flex min-h-screen items-center justify-center bg-secondary-50">
+    <div className="flex flex-col items-center gap-4">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+      <p className="text-secondary-600 text-lg font-medium">
+        Preparing your experience...
+      </p>
+    </div>
+  </div>
+);
+
+// Background pattern component (keep your existing implementation)
 const BackgroundPattern = memo(() => (
   <div
     className="absolute max-xl:w-full max-lg:left-0 right-[-5px] top-0 w-[50%] h-screen"
@@ -41,6 +56,7 @@ const BackgroundPattern = memo(() => (
 ));
 BackgroundPattern.displayName = "BackgroundPattern";
 
+// OTP Input component (keep your existing implementation)
 const OTPInput = memo(({ value, status }) => (
   <div
     data-status={status}
@@ -62,10 +78,9 @@ const OTPInput = memo(({ value, status }) => (
 ));
 OTPInput.displayName = "OTPInput";
 
-// Custom CAPTCHA component
+// CAPTCHA widget component
 const CaptchaWidget = memo(() => {
   useEffect(() => {
-    // Create CAPTCHA container if it doesn't exist
     if (!document.getElementById("clerk-captcha")) {
       const captchaDiv = document.createElement("div");
       captchaDiv.id = "clerk-captcha";
@@ -78,11 +93,52 @@ const CaptchaWidget = memo(() => {
 CaptchaWidget.displayName = "CaptchaWidget";
 
 export default function SignUpPage() {
+  // Authentication hooks
+  const { isLoaded, userId, isSignedIn } = useAuth();
+  const router = useRouter();
+
+  // Component state
+  const [shouldRender, setShouldRender] = useState(false);
   const [isShown, setIsShown] = useState(false);
   const [resendTimeout, setResendTimeout] = useState(0);
   const [verificationSent, setVerificationSent] = useState(false);
-  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [redirectInProgress, setRedirectInProgress] = useState(false);
 
+  // Enhanced authentication and redirect control
+  useEffect(() => {
+    let redirectTimer;
+    let renderTimer;
+
+    const handleAuthState = async () => {
+      if (isLoaded) {
+        if (isSignedIn) {
+          setRedirectInProgress(true);
+          // Immediate redirect attempt
+          try {
+            await router.push("/dashboard");
+          } catch (error) {
+            console.error("Redirect failed:", error);
+            setRedirectInProgress(false);
+          }
+        } else {
+          // Slight delay before showing signup form to prevent flash
+          renderTimer = setTimeout(() => {
+            setShouldRender(true);
+          }, 100);
+        }
+      }
+    };
+
+    handleAuthState();
+
+    // Cleanup timers
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer);
+      if (renderTimer) clearTimeout(renderTimer);
+    };
+  }, [isLoaded, isSignedIn, router]);
+
+  // Handle resend verification code
   const handleResendCode = () => {
     if (resendTimeout > 0) return;
 
@@ -100,281 +156,306 @@ export default function SignUpPage() {
     }, 1000);
   };
 
-  // Handle CAPTCHA verification
-  const handleCaptchaVerification = (token) => {
-    setCaptchaVerified(true);
-  };
+  // Show loading state during authentication check or redirect
+  if (!isLoaded || !shouldRender || isSignedIn || redirectInProgress) {
+    return <LoadingSpinner />;
+  }
 
-  return (
-    <section className="bg-secondary-50 overflow-x-hidden">
-      <div className="lg:grid max-lg:h-screen max-lg:items-center lg:min-h-screen relative top-0 left-0 xl:grid-cols-12">
-        <section className="relative flex items-end max-xl:h-0 bg-[#0f0f0f] xl:h-full xl:col-span-6">
-          <Link href="/">
+  // Only render the signup form if explicitly allowed and user is not authenticated
+  if (shouldRender && !isSignedIn) {
+    return (
+      <section className="bg-secondary-50 overflow-x-hidden">
+        <div className="lg:grid max-lg:h-screen max-lg:items-center lg:min-h-screen relative top-0 left-0 xl:grid-cols-12">
+          {/* Left section with background image */}
+          <section className="relative flex items-end max-xl:h-0 bg-[#0f0f0f] xl:h-full xl:col-span-6">
+            <Link href="/">
+              <Image
+                className="rotate-180 w-[60px] h-[60px] max-2xl:left-[10%] max-xl:hidden max-xl:bg-secondary-700 bg-primary-900 hover:bg-primary-800 duration-300 transition-all hover:scale-105 hover:translate-x-[10px] box-shadow absolute top-[10%] left-[6%] z-50 px-[14px] rounded-full cursor-pointer"
+                src={energy}
+                alt="Back to home"
+                priority
+              />
+            </Link>
             <Image
-              className="rotate-180 w-[60px] h-[60px] max-2xl:left-[10%] max-xl:hidden max-xl:bg-secondary-700 bg-primary-900 hover:bg-primary-800 duration-300 transition-all hover:scale-105 hover:translate-x-[10px] box-shadow absolute top-[10%] left-[6%] z-50 px-[14px] rounded-full cursor-pointer"
-              src={energy}
-              alt="energy"
+              className="absolute xl:flex hidden z-40 w-full top-0 inset-0 h-screen object-cover masky-bg-portal opacity-80"
+              src={portal}
+              quality={100}
+              alt="Portal background"
               priority
             />
-          </Link>
-          <Image
-            className="absolute xl:flex hidden z-40 w-full top-0 inset-0 h-screen object-cover masky-bg-portal opacity-80"
-            src={portal}
-            quality={100}
-            alt="portal"
-            priority
-          />
-          <div className="relative hidden xl:block z-50">
-            <h2 className="opacity-100 text-[56px] mb-[26px] font-[600] text-white max-xl:text-[42px] max-xl:leading-[50px] z-50 leading-[64px] flex items-center ml-[60px] max-w-[75%]">
-              Enter the Portal of Progress
-            </h2>
-            <p className="ml-[60px] max-xl:text-[17px] hidden lg:flex z-50 leading-[30px] max-xl:max-w-[85%] max-w-[75%] text-[19px] mb-[95px] font-[400] text-secondary-100 relative pr-8">
-              Discover a smarter, stronger, more confident YOU. Unlock AI-driven
-              interviews tailored to your journey and step into your future.
-            </p>
+            <div className="relative hidden xl:block z-50">
+              <h2 className="opacity-100 text-[56px] mb-[26px] font-[600] text-white max-xl:text-[42px] max-xl:leading-[50px] z-50 leading-[64px] flex items-center ml-[60px] max-w-[75%]">
+                Enter the Portal of Progress
+              </h2>
+              <p className="ml-[60px] max-xl:text-[17px] hidden lg:flex z-50 leading-[30px] max-xl:max-w-[85%] max-w-[75%] text-[19px] mb-[95px] font-[400] text-secondary-100 relative pr-8">
+                Discover a smarter, stronger, more confident YOU. Unlock
+                AI-driven interviews tailored to your journey and step into your
+                future.
+              </p>
+            </div>
+          </section>
+
+          {/* Background pattern */}
+          <div className="h-screen z-[0] w-full absolute top-0 right-0">
+            <BackgroundPattern />
           </div>
-        </section>
 
-        <div className="h-screen z-[0] w-full absolute top-0 right-0">
-          <BackgroundPattern />
-        </div>
-
-        <main className="flex min-h-screen w-full max-md:mt-0 items-center justify-center p-4 lg:col-span-7 lg:p-16 xl:col-span-6">
-          <div className="grid w-full grow items-center px-4 sm:justify-center">
-            <SignUp.Root>
-              <Clerk.Loading>
-                {(isGlobalLoading) => (
-                  <>
-                    <SignUp.Step name="start">
-                      <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-3 shadow-lg sm:px-10 sm:w-[500px]">
-                        <CardHeader className="relative flex flex-col items-center justify-center text-center">
-                          <Link href="/">
+          {/* Main signup form section */}
+          <main className="flex min-h-screen w-full max-md:mt-0 items-center justify-center p-4 lg:col-span-7 lg:p-16 xl:col-span-6">
+            <div className="grid w-full grow items-center px-4 sm:justify-center">
+              <SignUp.Root>
+                <Clerk.Loading>
+                  {(isGlobalLoading) => (
+                    <>
+                      {/* Initial signup step */}
+                      <SignUp.Step name="start">
+                        <Card className="max-w-[500px] relative space-y-6 max-[350px]:ml-[-23px] rounded-3xl bg-white box-shadow-card z-50 px-6 py-3 shadow-lg sm:px-10 sm:w-[500px]">
+                          <CardHeader className="relative flex flex-col items-center justify-center text-center">
+                            <Link href="/">
+                              <Image
+                                className="absolute block xl:hidden rotate-180 left-[10px] top-[10px] box-shadow-card sm:left-[10px] h-10 w-10 cursor-pointer rounded-full bg-secondary-900 max-xl:block p-2 transition-all duration-300 hover:scale-105 hover:bg-primary-800 sm:h-12 sm:w-12"
+                                src={energy}
+                                alt="Back to home"
+                                priority
+                              />
+                            </Link>
                             <Image
-                              className="absolute block xl:hidden rotate-180 left-[10px] top-[10px] box-shadow-card sm:left-[10px] h-10 w-10 cursor-pointer rounded-full bg-secondary-900 max-xl:block p-2 transition-all duration-300 hover:scale-105 hover:bg-primary-800 sm:h-12 sm:w-12"
-                              src={energy}
-                              alt="Back"
+                              className="h-12 relative mb-[25px] w-12 sm:h-14 sm:w-14"
+                              src={logo}
+                              alt="Jobstell logo"
                               priority
                             />
-                          </Link>
-                          <Image
-                            className="h-12 relative mb-[25px] w-12 sm:h-14 sm:w-14"
-                            src={logo}
-                            alt="logo"
-                            priority
-                          />
-                          <CardTitle className="text-3xl block pt-5 font-bold tracking-tight md:text-4xl sm:text-4xl text-zinc-950 lg:text-4xl">
-                            Sign up to Jobstell
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="grid gap-y-4">
-                          <div className="flex flex-col gap-4">
-                            <Clerk.Connection
-                              className="mt-[-20px]"
-                              name="google"
-                              asChild
-                            >
-                              <Button
-                                className="flex flex-row h-[53px] justify-center border text-center w-full border-secondary-300 gap-[15px] items-center hover:scale-95 duration-300 transition-all text-secondary-900 text-[16px] font-[400] py-[13px] px-5 rounded-full"
-                                variant="outline"
-                                type="button"
-                                disabled={isGlobalLoading}
+                            <CardTitle className="text-3xl block pt-5 font-bold tracking-tight md:text-4xl sm:text-4xl text-zinc-950 lg:text-4xl">
+                              Sign up to Jobstell
+                            </CardTitle>
+                          </CardHeader>
+
+                          <CardContent className="grid gap-y-4">
+                            {/* Social login buttons */}
+                            <div className="flex flex-col gap-4">
+                              <Clerk.Connection
+                                className="mt-[-20px]"
+                                name="google"
+                                asChild
                               >
-                                <Image
-                                  src={google}
-                                  className="w-[20px] h-[20px]"
-                                  alt="google"
-                                />
-                                Sign Up With Google
-                              </Button>
-                            </Clerk.Connection>
-                            <Clerk.Connection name="facebook" asChild>
-                              <Button
-                                className="flex flex-row h-[53px] justify-center border hover:scale-95 box-shadow transition-all duration-300 text-center w-full border-secondary-200 hover:bg-primary-400 hover:text-white box-shadow bg-primary-400 gap-[15px] items-center text-white text-[16px] font-[400] py-[13px] px-5 rounded-full"
-                                variant="outline"
-                                type="button"
-                                disabled={isGlobalLoading}
-                              >
-                                <Image
-                                  src={facebook}
-                                  className="w-[20px] h-[20px]"
-                                  alt="facebook"
-                                />
-                                Sign Up With Facebook
-                              </Button>
-                            </Clerk.Connection>
-                          </div>
-                          <p className="flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border mb-2 after:h-px after:flex-1 after:bg-border">
-                            or
-                          </p>
-                          <Clerk.Field
-                            name="emailAddress"
-                            className="space-y-2"
-                          >
-                            <Clerk.Label asChild>
-                              <Label className="text-base font-normal text-secondary-500 sm:text-lg">
-                                ✶ Email address
-                              </Label>
-                            </Clerk.Label>
-                            <Clerk.Input
-                              className="mt-2 w-full rounded-full bg-white px-3.5 h-[45px] py-[13px] text-base outline-none border-secondary-300"
-                              type="email"
-                              required
-                              asChild
+                                <Button
+                                  className="flex flex-row h-[53px] justify-center border text-center w-full border-secondary-300 gap-[15px] items-center hover:scale-95 duration-300 transition-all text-secondary-900 text-[16px] font-[400] py-[13px] px-5 rounded-full"
+                                  variant="outline"
+                                  type="button"
+                                  disabled={isGlobalLoading}
+                                >
+                                  <Image
+                                    src={google}
+                                    className="w-[20px] h-[20px]"
+                                    alt="Google icon"
+                                  />
+                                  Sign Up With Google
+                                </Button>
+                              </Clerk.Connection>
+
+                              <Clerk.Connection name="facebook" asChild>
+                                <Button
+                                  className="flex flex-row h-[53px] justify-center border hover:scale-95 box-shadow transition-all duration-300 text-center w-full border-secondary-200 hover:bg-primary-400 hover:text-white box-shadow bg-primary-400 gap-[15px] items-center text-white text-[16px] font-[400] py-[13px] px-5 rounded-full"
+                                  variant="outline"
+                                  type="button"
+                                  disabled={isGlobalLoading}
+                                >
+                                  <Image
+                                    src={facebook}
+                                    className="w-[20px] h-[20px]"
+                                    alt="Facebook icon"
+                                  />
+                                  Sign Up With Facebook
+                                </Button>
+                              </Clerk.Connection>
+                            </div>
+
+                            {/* Divider */}
+                            <p className="flex items-center gap-x-3 text-sm text-muted-foreground before:h-px before:flex-1 before:bg-border mb-2 after:h-px after:flex-1 after:bg-border">
+                              or continue with email
+                            </p>
+
+                            {/* Email field */}
+                            <Clerk.Field
+                              name="emailAddress"
+                              className="space-y-2"
                             >
-                              <Input />
-                            </Clerk.Input>
-                            <Clerk.FieldError className="block text-sm text-destructive mt-1" />
-                          </Clerk.Field>
-                          <Clerk.Field name="password" className="space-y-2">
-                            <Clerk.Label asChild>
-                              <Label className="text-base font-normal text-secondary-500 sm:text-lg">
-                                ✶ Password
-                              </Label>
-                            </Clerk.Label>
-                            <div className="relative">
+                              <Clerk.Label asChild>
+                                <Label className="text-base font-normal text-secondary-500 sm:text-lg">
+                                  ✶ Email address
+                                </Label>
+                              </Clerk.Label>
                               <Clerk.Input
                                 className="mt-2 w-full rounded-full bg-white px-3.5 h-[45px] py-[13px] text-base outline-none border-secondary-300"
-                                type={isShown ? "text" : "password"}
+                                type="email"
                                 required
                                 asChild
                               >
                                 <Input />
                               </Clerk.Input>
-                              <Image
-                                className={`${
-                                  isShown ? "hidden" : "block"
-                                } absolute hover:scale-110 duration-300 transition-all top-1/2 cursor-pointer opacity-70 right-[15px]  -translate-y-1/2`}
-                                src={openEye}
-                                onClick={() => setIsShown(!isShown)}
-                                alt="open-eye-svg"
-                              />
-                              <Image
-                                className={`${
-                                  isShown ? "block" : "hidden"
-                                } absolute  hover:scale-110 duration-300 transition-all top-1/2 cursor-pointer opacity-70 right-[14px] w-[30px] h-[30px] -translate-y-1/2 mt-1 ml-[10px]`}
-                                src={closeEye}
-                                onClick={() => setIsShown(!isShown)}
-                                alt="close-eye-svg"
-                              />
-                            </div>
-                            <Clerk.FieldError className="block text-sm text-red-400 font-[600] mt-[8px]" />
-                          </Clerk.Field>
+                              <Clerk.FieldError className="block text-sm text-destructive mt-1" />
+                            </Clerk.Field>
 
-                          {/* Add CAPTCHA widget */}
-                          <CaptchaWidget />
-                        </CardContent>
-                        <CardFooter>
-                          <div className="grid w-full gap-y-4">
-                            <SignUp.Action submit asChild>
-                              <Button
-                                className="w-full h-[53px] box-shadow mt-[-25px] rounded-full bg-primary-500 px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"
-                                disabled={isGlobalLoading}
-                              >
-                                Continue
-                                <Image src={sign} alt="arrow-right" />
-                              </Button>
-                            </SignUp.Action>
-                            <Button variant="link" asChild>
-                              <Clerk.Link
-                                className="pt-3 text-center text-sm text-zinc-500 sm:text-base"
-                                navigate="sign-in"
-                              >
-                                Already have an account? Sign in
-                              </Clerk.Link>
-                            </Button>
-                          </div>
-                        </CardFooter>
-                      </Card>
-                    </SignUp.Step>
-
-                    <SignUp.Step name="verifications">
-                      <SignUp.Strategy name="email_code">
-                        <Card className="w-full relative z-50 rounded-3xl py-3 max-md:ml-[-12px] sm:w-96 shadow-sm border border-[#212121]/20 text-center">
-                          <CardHeader>
-                            <CardTitle className="text-[30px] text-secondary-900 mb-2">
-                              Verify your email
-                            </CardTitle>
-                            <CardDescription className="text-base">
-                              {verificationSent
-                                ? "New verification code sent to your email"
-                                : "Use the verification link sent to your email address"}
-                            </CardDescription>
-                          </CardHeader>
-                          <CardContent className="grid gap-y-4">
-                            <div className="grid items-center justify-center gap-y-2">
-                              <Clerk.Field name="code" className="space-y-2">
-                                <Clerk.Label className="sr-only">
-                                  Verification Code
-                                </Clerk.Label>
-                                <div className="flex rounded-full justify-center text-center">
-                                  <Clerk.Input
-                                    type="otp"
-                                    className="flex justify-center has-[:disabled]:opacity-50"
-                                    autoSubmit
-                                    render={(props) => (
-                                      <OTPInput
-                                        value={props.value}
-                                        status={props.status}
-                                      />
-                                    )}
-                                  />
-                                </div>
-                                <Clerk.FieldError>
-                                  <div className="flex py-2 rounded-xl gap-[10px] bg-red-50 items-center justify-center">
-                                    <Image
-                                      src={error}
-                                      alt="error"
-                                      width={20}
-                                      height={20}
-                                    />
-                                    <Clerk.FieldError className="block text-center text-base font-[600] text-destructive" />
-                                  </div>
-                                </Clerk.FieldError>
-                              </Clerk.Field>
-                              <SignUp.Action
-                                resend
-                                onClick={handleResendCode}
-                                disabled={resendTimeout > 0}
-                                asChild
-                              >
-                                <Button
-                                  variant="link"
-                                  className="text-primary-500 hover:text-primary-600"
-                                  disabled={resendTimeout > 0}
+                            {/* Password field */}
+                            <Clerk.Field name="password" className="space-y-2">
+                              <Clerk.Label asChild>
+                                <Label className="text-base font-normal text-secondary-500 sm:text-lg">
+                                  ✶ Password
+                                </Label>
+                              </Clerk.Label>
+                              <div className="relative">
+                                <Clerk.Input
+                                  className="mt-2 w-full rounded-full bg-white px-3.5 h-[45px] py-[13px] text-base outline-none border-secondary-300"
+                                  type={isShown ? "text" : "password"}
+                                  required
+                                  asChild
                                 >
-                                  {resendTimeout > 0
-                                    ? `Wait ${resendTimeout}s to resend code`
-                                    : "Didn't receive a code? Resend"}
-                                </Button>
-                              </SignUp.Action>
-                            </div>
+                                  <Input />
+                                </Clerk.Input>
+                                <Image
+                                  className={`${
+                                    isShown ? "hidden" : "block"
+                                  } absolute hover:scale-110 duration-300 transition-all top-1/2 cursor-pointer opacity-70 right-[15px] -translate-y-1/2`}
+                                  src={openEye}
+                                  onClick={() => setIsShown(!isShown)}
+                                  alt="Show password"
+                                />
+                                <Image
+                                  className={`${
+                                    isShown ? "block" : "hidden"
+                                  } absolute hover:scale-110 duration-300 transition-all top-1/2 cursor-pointer opacity-70 right-[14px] w-[30px] h-[30px] -translate-y-1/2 mt-1 ml-[10px]`}
+                                  src={closeEye}
+                                  onClick={() => setIsShown(!isShown)}
+                                  alt="Hide password"
+                                />
+                              </div>
+                              <Clerk.FieldError className="block text-sm text-red-400 font-[600] mt-[8px]" />
+                            </Clerk.Field>
+
+                            {/* CAPTCHA */}
+                            <CaptchaWidget />
                           </CardContent>
+
                           <CardFooter>
                             <div className="grid w-full gap-y-4">
+                              {/* Submit button */}
                               <SignUp.Action submit asChild>
                                 <Button
-                                  className="box-shadow h-[53px] bg-primary-500 rounded-full hover:bg-primary-600 transition-all duration-300"
+                                  className="w-full h-[53px] box-shadow mt-[-25px] rounded-full bg-primary-500 px-4 py-3 text-center text-base box-shadow font-medium text-white shadow transition-all hover:scale-95 duration-300 hover:bg-primary-600 sm:text-lg"
                                   disabled={isGlobalLoading}
                                 >
                                   Continue
-                                  <Image src={sign} alt="sign" />
+                                  <Image src={sign} alt="Continue sign" />
                                 </Button>
                               </SignUp.Action>
+
+                              {/* Sign in link */}
+                              <Button variant="link" asChild>
+                                <Clerk.Link
+                                  className="pt-3 text-center text-sm text-zinc-500 sm:text-base"
+                                  navigate="sign-in"
+                                >
+                                  Already have an account? Sign in
+                                </Clerk.Link>
+                              </Button>
                             </div>
                           </CardFooter>
                         </Card>
-                      </SignUp.Strategy>
-                    </SignUp.Step>
-                  </>
-                )}
-              </Clerk.Loading>
-            </SignUp.Root>
-          </div>
-        </main>
-        <p className="hidden max-md:hidden text-white opacity-0 max-xl:block mt-[205px]">
-          Hello
-        </p>
-      </div>
-    </section>
-  );
+                      </SignUp.Step>
+
+                      {/* Verification step */}
+                      <SignUp.Step name="verifications">
+                        <SignUp.Strategy name="email_code">
+                          <Card className="w-full relative z-50 rounded-3xl py-3 max-md:ml-[-12px] sm:w-96 shadow-sm border border-[#212121]/20 text-center">
+                            <CardHeader>
+                              <CardTitle className="text-[30px] text-secondary-900 mb-2">
+                                Verify your email
+                              </CardTitle>
+                              <CardDescription className="text-base">
+                                {verificationSent
+                                  ? "New verification code sent to your email"
+                                  : "Use the verification link sent to your email address"}
+                              </CardDescription>
+                            </CardHeader>
+
+                            <CardContent className="grid gap-y-4">
+                              <div className="grid items-center justify-center gap-y-2">
+                                <Clerk.Field name="code" className="space-y-2">
+                                  <Clerk.Label className="sr-only">
+                                    Verification Code
+                                  </Clerk.Label>
+                                  <div className="flex rounded-full justify-center text-center">
+                                    <Clerk.Input
+                                      type="otp"
+                                      className="flex justify-center has-[:disabled]:opacity-50"
+                                      autoSubmit
+                                      render={(props) => (
+                                        <OTPInput
+                                          value={props.value}
+                                          status={props.status}
+                                        />
+                                      )}
+                                    />
+                                  </div>
+                                  <Clerk.FieldError>
+                                    <div className="flex py-2 rounded-xl gap-[10px] bg-red-50 items-center justify-center">
+                                      <Image
+                                        src={error}
+                                        alt="Error icon"
+                                        width={20}
+                                        height={20}
+                                      />
+                                      <Clerk.FieldError className="block text-center text-base font-[600] text-destructive" />
+                                    </div>
+                                  </Clerk.FieldError>
+                                </Clerk.Field>
+
+                                {/* Resend code button */}
+                                <SignUp.Action
+                                  resend
+                                  onClick={handleResendCode}
+                                  disabled={resendTimeout > 0}
+                                  asChild
+                                >
+                                  <Button
+                                    variant="link"
+                                    className="text-primary-500 hover:text-primary-600"
+                                    disabled={resendTimeout > 0}
+                                  >
+                                    {resendTimeout > 0
+                                      ? `Wait ${resendTimeout}s to resend code`
+                                      : "Didn't receive a code? Resend"}
+                                  </Button>
+                                </SignUp.Action>
+                              </div>
+                            </CardContent>
+
+                            <CardFooter>
+                              <div className="grid w-full gap-y-4">
+                                <SignUp.Action submit asChild>
+                                  <Button
+                                    className="box-shadow h-[53px] bg-primary-500 rounded-full hover:bg-primary-600 transition-all duration-300"
+                                    disabled={isGlobalLoading}
+                                  >
+                                    Continue
+                                    <Image src={sign} alt="Continue sign" />
+                                  </Button>
+                                </SignUp.Action>
+                              </div>
+                            </CardFooter>
+                          </Card>
+                        </SignUp.Strategy>
+                      </SignUp.Step>
+                    </>
+                  )}
+                </Clerk.Loading>
+              </SignUp.Root>
+            </div>
+          </main>
+        </div>
+      </section>
+    );
+  }
+
+  return null;
 }

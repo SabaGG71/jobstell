@@ -25,6 +25,19 @@ export default function AccountAvatar() {
     }
   };
 
+  const getDisplayName = () => {
+    if (!user) return "";
+    if (user.fullName) return user.fullName;
+    if (user.firstName && user.lastName)
+      return `${user.firstName} ${user.lastName}`;
+    if (user.firstName) return user.firstName;
+    if (user.lastName) return user.lastName;
+    if (user.emailAddresses && user.emailAddresses[0]) {
+      return user.emailAddresses[0].emailAddress.split("@")[0];
+    }
+    return "User";
+  };
+
   return (
     <div className="flex items-center space-x-4 p-4 bg-background shadow-md rounded-md">
       <div className="flex flex-col">
@@ -38,8 +51,8 @@ export default function AccountAvatar() {
               {user.firstName?.charAt(0)}
             </AvatarFallback>
           </Avatar>
-          <span className="text-[15px] font-medium text-foreground">
-            {user.fullName}
+          <span className="text-[16px] font-[600] text-second">
+            {getDisplayName()}
           </span>
         </div>
         <Button
