@@ -51,35 +51,68 @@ export default function AddNewInterview() {
       process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT +
       " interview questions along with answers in JSON format, give me question and answer field on JSON";
 
-    const result = await chatSession.sendMessage(inputPrompt);
-    const mockJsonResp = result.response
-      .text()
-      .replace("```json", "")
-      .replace("```", "");
-    console.log(JSON.parse(mockJsonResp));
-    setJsonResponse(mockJsonResp);
+    try {
+      const result = await chatSession.sendMessage(inputPrompt);
+      let mockJsonResp = result.response.text();
 
-    if (mockJsonResp) {
-      const resp = await db
-        .insert(JobInterview)
-        .values({
-          mockJobId: uuidv4(),
-          jsonMockResp: mockJsonResp,
-          jobPosition: jobPostion,
-          jobDescription: jobDesc,
-          jobExperience: jobExperience,
-          createdBy: user?.primaryEmailAddress?.emailAddress,
-          createdAt: moment().format("DD-MM-YYYY"),
-        })
-        .returning({ mockJobId: JobInterview.mockJobId });
+      // Remove code block markers and trim whitespace
+      mockJsonResp = mockJsonResp
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
 
-      if (resp) {
-        setOpenDialog(false);
-        router.push("/dashboard/interview/" + resp[0]?.mockJobId);
+      // Try to parse the JSON, with fallback for potential parsing errors
+      let parsedResponse;
+      try {
+        parsedResponse = JSON.parse(mockJsonResp);
+      } catch (parseError) {
+        // If initial parse fails, try to extract JSON between first { and last }
+        const jsonMatch = mockJsonResp.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          try {
+            parsedResponse = JSON.parse(jsonMatch[0]);
+          } catch (extractError) {
+            console.error("Failed to parse JSON:", extractError);
+            alert("Error generating interview questions. Please try again.");
+            setLoading(false);
+            return;
+          }
+        } else {
+          console.error("No valid JSON found");
+          alert("Error generating interview questions. Please try again.");
+          setLoading(false);
+          return;
+        }
       }
-      console.log("Inserted ID: ", resp);
-    } else {
-      console.log("ERROR");
+
+      setJsonResponse(JSON.stringify(parsedResponse, null, 2));
+
+      if (parsedResponse) {
+        const resp = await db
+          .insert(JobInterview)
+          .values({
+            mockJobId: uuidv4(),
+            jsonMockResp: JSON.stringify(parsedResponse),
+            jobPosition: jobPostion,
+            jobDescription: jobDesc,
+            jobExperience: jobExperience,
+            createdBy: user?.primaryEmailAddress?.emailAddress,
+            createdAt: moment().format("DD-MM-YYYY"),
+          })
+          .returning({ mockJobId: JobInterview.mockJobId });
+
+        if (resp) {
+          setOpenDialog(false);
+          router.push("/dashboard/interview/" + resp[0]?.mockJobId);
+        }
+        console.log("Inserted ID: ", resp);
+      } else {
+        console.log("ERROR: No valid response");
+        alert("Error generating interview questions. Please try again.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred. Please try again.");
     }
 
     setLoading(false);
