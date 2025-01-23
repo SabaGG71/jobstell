@@ -223,7 +223,7 @@ export default function Header() {
               {/* Desktop Menu */}
               <div className="lg:flex hidden items-center">
                 {/* Contact Button */}
-                <span className="flex items-center gap-3 text-secondary-900 py-[7px] px-5 rounded-full font-[600] text-[15px] cursor-pointer hover:text-secondary-600 duration-200 transition-all">
+                <span className="flex items-center gap-3 text-secondary-900 py-[7px] px-5 rounded-full font-[400] text-[15px] cursor-pointer hover:text-secondary-600 duration-200 transition-all">
                   <Image
                     width={17}
                     height={17}
