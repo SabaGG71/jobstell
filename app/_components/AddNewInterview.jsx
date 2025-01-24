@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -55,34 +55,51 @@ export default function AddNewInterview() {
       const result = await chatSession.sendMessage(inputPrompt);
       let mockJsonResp = result.response.text();
 
-      // Remove code block markers and trim whitespace
-      mockJsonResp = mockJsonResp
-        .replace(/```json/g, "")
-        .replace(/```/g, "")
-        .trim();
-
-      // Try to parse the JSON, with fallback for potential parsing errors
+      // Advanced JSON parsing strategy
       let parsedResponse;
       try {
-        parsedResponse = JSON.parse(mockJsonResp);
-      } catch (parseError) {
-        // If initial parse fails, try to extract JSON between first { and last }
-        const jsonMatch = mockJsonResp.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
+        // Remove code block markers, whitespace, and clean up the response
+        let cleanedResponse = mockJsonResp
+          .replace(/```(json)?/g, "") // Remove code block markers
+          .replace(/\n/g, "") // Remove newlines
+          .replace(/\s+/g, " ") // Replace multiple whitespaces
+          .trim();
+
+        // Try multiple parsing strategies
+        const parseStrategies = [
+          () => JSON.parse(cleanedResponse),
+          () => {
+            // Extract JSON between first { and last }
+            const match = cleanedResponse.match(/\{.*\}/s);
+            return match ? JSON.parse(match[0]) : null;
+          },
+          () => {
+            // Remove any text before first { and after last }
+            const startIndex = cleanedResponse.indexOf("{");
+            const endIndex = cleanedResponse.lastIndexOf("}") + 1;
+            return JSON.parse(cleanedResponse.slice(startIndex, endIndex));
+          },
+        ];
+
+        for (const strategy of parseStrategies) {
           try {
-            parsedResponse = JSON.parse(jsonMatch[0]);
-          } catch (extractError) {
-            console.error("Failed to parse JSON:", extractError);
-            alert("Error generating interview questions. Please try again.");
-            setLoading(false);
-            return;
+            parsedResponse = strategy();
+            if (parsedResponse) break;
+          } catch (err) {
+            console.log("Parsing strategy failed:", err);
+            continue;
           }
-        } else {
-          console.error("No valid JSON found");
-          alert("Error generating interview questions. Please try again.");
-          setLoading(false);
-          return;
         }
+
+        if (!parsedResponse) {
+          throw new Error("Could not parse JSON response");
+        }
+      } catch (parseError) {
+        console.error("Comprehensive JSON Parsing Error:", parseError);
+        console.log("Raw response:", mockJsonResp);
+        alert("Error generating interview questions. Please try again.");
+        setLoading(false);
+        return;
       }
 
       setJsonResponse(JSON.stringify(parsedResponse, null, 2));
