@@ -3,9 +3,8 @@ import Webcam from "react-webcam";
 import camera from "../../public/camera.png";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import useSpeechToText from "react-hook-speech-to-text";
 import { Mic } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { chatSession } from "@/utils/GeminiAIModal";
 import { db } from "@/utils/db";
@@ -13,6 +12,7 @@ import { UserAnswer } from "@/utils/schema";
 import { useUser } from "@clerk/clerk-react";
 import moment from "moment";
 import { eq, and } from "drizzle-orm";
+import { useRouter } from "next/navigation";
 
 export default function RecordAnswerSection({
   activeQuestionIndex,
@@ -22,17 +22,10 @@ export default function RecordAnswerSection({
   const [userAnswer, setUserAnswer] = useState("");
   const { user } = useUser();
   const [loading, isLoading] = useState(false);
-
-  const {
-    isRecording,
-    results,
-    startSpeechToText,
-    stopSpeechToText,
-    setResults,
-  } = useSpeechToText({
-    continuous: true,
-    useLegacyResults: false,
-  });
+  const [isRecording, setIsRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const chunksRef = useRef([]);
+  const router = useRouter();
 
   const questions = Array.isArray(mockInterviewQuestion)
     ? mockInterviewQuestion
@@ -40,36 +33,120 @@ export default function RecordAnswerSection({
       mockInterviewQuestion?.interview_questions ||
       [];
 
-  useEffect(() => {
-    results.map((result) => {
-      return setUserAnswer((prevAns) => prevAns + result?.transcript);
-    });
-  }, [results]);
-
-  const UpdateUserAnswer = useCallback(async () => {
-    if (!userAnswer.trim() || !user?.primaryEmailAddress?.emailAddress) return;
+  const handleTranscriptionResponse = async (response) => {
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `HTTP error! status: ${response.status}, body: ${errorText}`
+      );
+    }
 
     try {
-      isLoading(true);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(`JSON parsing error: ${error.message}`);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: "audio/webm;codecs=opus",
+      });
+      chunksRef.current = [];
+
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorderRef.current.onstop = async () => {
+        try {
+          const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
+          const formData = new FormData();
+          formData.append("file", audioBlob, "audio.webm");
+
+          isLoading(true);
+          const response = await fetch("/api/transcribe", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await handleTranscriptionResponse(response);
+
+          if (data.error) {
+            throw new Error(data.error);
+          }
+
+          if (data.transcription) {
+            setUserAnswer(data.transcription);
+            await processTranscribedAnswer(data.transcription);
+          } else {
+            throw new Error("No transcription received");
+          }
+        } catch (error) {
+          console.error("Transcription error:", error);
+          toast.error(error.message || "Failed to transcribe audio");
+        } finally {
+          isLoading(false);
+        }
+      };
+
+      mediaRecorderRef.current.start(1000);
+      setIsRecording(true);
+      toast.success("Recording started");
+    } catch (error) {
+      console.error("Error starting recording:", error);
+      toast.error("Failed to start recording");
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (mediaRecorderRef.current.stream) {
+        mediaRecorderRef.current.stream
+          .getTracks()
+          .forEach((track) => track.stop());
+      }
+    }
+  };
+
+  const processTranscribedAnswer = async (transcribedText) => {
+    if (!transcribedText?.trim() || !user?.primaryEmailAddress?.emailAddress) {
+      toast.error("Invalid transcription or user email");
+      return;
+    }
+
+    try {
       const currentQuestion = questions[activeQuestionIndex]?.question;
-      const currentAnswer = userAnswer;
+      if (!currentQuestion) {
+        throw new Error("Question not found");
+      }
 
       const feedbackPrompt =
-        `Question: ${currentQuestion}, User Answer: ${currentAnswer}, ` +
-        "Depends on Question and user answer for give interview question " +
-        "please give us rating for answer and feedback as area of improvment if any " +
-        "in just 4 to 6 lines to improve it in JSON format with rating field and feedback field";
+        `Question: ${currentQuestion}\nUser Answer: ${transcribedText}\n` +
+        "Please provide a rating and feedback for this interview answer in 4-6 lines in JSON format with 'rating' and 'feedback' fields";
 
       const result = await chatSession.sendMessage(feedbackPrompt);
-
       const mockJsonResp = result.response
         .text()
-        .replace("```json", "")
-        .replace("```", "");
+        .replace(/```json\s*|\s*```/g, "")
+        .trim();
 
-      const jsonFeedbackResp = JSON.parse(mockJsonResp);
+      let jsonFeedbackResp;
+      try {
+        jsonFeedbackResp = JSON.parse(mockJsonResp);
+      } catch (error) {
+        console.error("Error parsing AI response:", error);
+        throw new Error("Failed to parse AI feedback");
+      }
 
-      // Delete existing answer for this question and user
+      // Delete existing answer if any
       await db
         .delete(UserAnswer)
         .where(
@@ -85,44 +162,29 @@ export default function RecordAnswerSection({
         mockIdRef: interviewData.mockJobId || "",
         question: currentQuestion,
         correctAns: questions[activeQuestionIndex]?.answer || "",
-        userAns: currentAnswer,
+        userAns: transcribedText,
         feedback: jsonFeedbackResp?.feedback || "",
         rating: jsonFeedbackResp?.rating || "",
         userEmail: user.primaryEmailAddress.emailAddress,
         createdAt: moment().format("DD-MM-YYYY"),
       });
 
-      toast("User Answer Recorded successfully");
-      setUserAnswer("");
-      setResults([]);
+      toast.success("Answer recorded successfully");
+
+      if (activeQuestionIndex === questions.length - 1) {
+        router.push(`/feedback/${interviewData.mockJobId}`);
+      }
     } catch (error) {
-      console.error("Error updating user answer:", error);
-      toast.error("Failed to record answer");
-    } finally {
-      isLoading(false);
+      console.error("Error processing answer:", error);
+      toast.error(error.message || "Failed to process answer");
     }
-  }, [
-    userAnswer,
-    questions,
-    activeQuestionIndex,
-    interviewData,
-    user,
-    setResults,
-  ]);
+  };
 
-  useEffect(() => {
-    if (!isRecording && userAnswer.length > 5) {
-      UpdateUserAnswer();
-    }
-  }, [userAnswer, isRecording, UpdateUserAnswer]);
-
-  const StartStopRecording = async () => {
+  const handleRecording = () => {
     if (isRecording) {
-      stopSpeechToText();
+      stopRecording();
     } else {
-      setUserAnswer("");
-      setResults([]);
-      startSpeechToText();
+      startRecording();
     }
   };
 
@@ -141,9 +203,14 @@ export default function RecordAnswerSection({
           mirrored={true}
         />
       </div>
+      <div className="text-center mb-4">
+        <p className="text-lg font-medium">
+          Question {activeQuestionIndex + 1} of {questions.length}
+        </p>
+      </div>
       <Button
         disabled={loading}
-        onClick={StartStopRecording}
+        onClick={handleRecording}
         variant="outline"
         className="my-10"
       >
@@ -156,6 +223,7 @@ export default function RecordAnswerSection({
           "Start Recording"
         )}
       </Button>
+      {loading && <p className="text-gray-500">Processing your answer...</p>}
     </div>
   );
 }

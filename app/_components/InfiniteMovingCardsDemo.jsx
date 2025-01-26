@@ -5,12 +5,12 @@ import { InfiniteMovingCards } from "./InfinityMovingCards";
 
 export function InfiniteMovingCardsDemo() {
   return (
-    <div className="h-[2.7rem] md:h-[4rem] xl:h-[5.25rem] container cursor-pointer 2xl:px-5  flex flex-col bg-scroller  job-type-mask antialiased items-center  justify-center relative overflow-hidden">
+    <div className="h-[2.7rem] md:h-[4rem] xl:h-[4.6rem] container cursor-pointer  flex flex-col bg-scroller job-type-mask antialiased items-center justify-center relative overflow-hidden">
       <InfiniteMovingCards
         items={testimonials}
         direction="right"
         speed={500}
-        gap={5}
+        gap={6}
       />
     </div>
   );

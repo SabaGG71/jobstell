@@ -57,39 +57,37 @@
   mask-image: linear-gradient(
     to right,
     rgba(0, 0, 0, 0) 0%,
-    rgb(0, 0, 0) 12.5%,
-    rgb(0, 0, 0) 87.5%,
-    rgb(0 0 0) 100%
+    rgb(0, 0, 0) 24.5%,
+    rgb(0, 0, 0) 100.5%,
+    rgb(0 0 0 / 0%) 100%
   );
 }
 .job-type-mask-2 {
   mask-image: linear-gradient(
     to right,
     rgb(0 0 0) 0%,
-    rgb(0, 0, 0) 12.5%,
-    rgb(0, 0, 0) 87.5%,
+    rgb(0, 0, 0) 40.5%,
+    rgb(0, 0, 0) 60.5%,
     rgb(0 0 0 / 0%) 100%
   );
 }
 .bg-scroller {
-  margin-right: 22px;
   border-right: 8px solid #a354ff;
   border-radius: 15px;
   background: linear-gradient(90deg, #7a0ef50f 0%, rgba(246, 240, 254, 1) 100%);
 }
 .bg-scroller-2 {
-  margin-right: 22px;
   border-left: 8px solid #a354ff;
   border-radius: 15px;
   background: linear-gradient(90deg, #7a0ef50f 0%, rgba(246, 240, 254, 1) 100%);
 }
 .box-shadow-black {
-  box-shadow: #97979738 4px 4px 18px 0px inset,
-    #97979738 0px 0.48175px 2.40875px -0.833333px,
-    #97979738 0px 1.83083px 9.15413px -1.66667px, #97979738 0px 8px 40px -2.5px,
-    #97979738 0px -0.48175px 2.40875px -0.833333px,
-    #97979738 0px -1.83083px 9.15413px -1.66667px,
-    #97979738 0px -8px 40px -2.5px;
+  box-shadow: #fefefe6d 4px 4px 18px 0px inset,
+    #fefefe6d 0px 0.48175px 2.40875px -0.833333px,
+    #fefefe6d 0px 1.83083px 9.15413px -1.66667px, #fefefe6d 0px 8px 40px -2.5px,
+    #fefefe6d 0px -0.48175px 2.40875px -0.833333px,
+    #fefefe6d 0px -1.83083px 9.15413px -1.66667px,
+    #fefefe6d 0px -8px 40px -2.5px;
 }
 .input-form {
   .mt-2:focus {

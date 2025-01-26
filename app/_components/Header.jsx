@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import callWhite from "../../public/call-white.svg";
 import {
   Popover,
   PopoverContent,
@@ -17,21 +18,25 @@ import logo from "../../public/logo.svg";
 import contactSVG from "../../public/contact-svg.svg";
 import signIn from "../../public/sign-in.svg";
 import logout from "../../public/logout.svg";
+import userSVG from "../../public/userSvg.svg";
 import down from "../../public/downArrow.svg";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isClient, setIsClient] = useState(false);
-  const { isSignedIn, user, isLoaded } = useUser();
+  const [isLoading, setIsLoading] = useState(true);
+  const { isSignedIn, user } = useUser();
   const { signOut } = useClerk();
 
-  // Handle hydration
   useEffect(() => {
-    setIsClient(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const getDisplayName = () => {
-    if (!user) return "";
+    if (!user) return "User";
     if (user.fullName) return user.fullName;
     if (user.firstName && user.lastName)
       return `${user.firstName} ${user.lastName}`;
@@ -53,9 +58,20 @@ export default function Header() {
     return "U";
   };
 
-  // Loading skeleton
+  const navigationLinks = [
+    { href: "/dashboard", label: "Dashboard", desktopKey: "desktop-dashboard" },
+    {
+      href: "/how-it-works",
+      label: "How It Works?",
+      desktopKey: "desktop-how-it-works",
+    },
+    { href: "/features", label: "Features", desktopKey: "desktop-features" },
+    { href: "/pricing", label: "Pricing", desktopKey: "desktop-pricing" },
+    { href: "/faq", label: "FAQ", desktopKey: "desktop-faq" },
+  ];
+
   const LoadingSkeleton = () => (
-    <header className="py-[19px] border-b border-[#adadad2c] bg-white/65 backdrop-blur px-4 fixed w-full top-0 z-50">
+    <header className="py-[19px] max-xl:max-w-[100%] border-b border-[#adadad2c] bg-white/65 backdrop-blur px-4 fixed w-full top-0 z-50">
       <div className="container">
         <div className="flex justify-between py-2 px-3 items-center sm:pr-3">
           <div className="w-[128px] h-[40px] bg-gray-200 rounded animate-pulse" />
@@ -68,14 +84,13 @@ export default function Header() {
     </header>
   );
 
-  // Show loading skeleton until both client-side rendering is ready and Clerk is loaded
-  if (!isClient || !isLoaded) {
+  if (isLoading) {
     return <LoadingSkeleton />;
   }
 
   return (
     <header
-      className={`py-[19px] ${
+      className={`py-[12px] ${
         isOpen ? "border-none" : "border-b"
       } border-[#adadad2c] bg-white/65 backdrop-blur px-4 fixed w-full top-0 z-50 transition-all duration-300`}
     >
@@ -87,8 +102,8 @@ export default function Header() {
             <Link href="/">
               <Image
                 quality={100}
-                width={128}
-                height={128}
+                width={126}
+                height={126}
                 src={logo}
                 alt="logo"
                 priority
@@ -97,59 +112,28 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <div className="lg:flex flex-1 justify-left text-sm items-center hidden">
-              <ul className="flex flex-1 text-secondary-900 gap-6 font-[400] mt-[3px] text-[15px] ml-10">
-                <li>
-                  <Link
-                    href="/dashboard"
-                    className="hover:text-primary-500 duration-300 transition-all"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/"
-                    className="hover:text-primary-500 duration-300 transition-all"
-                  >
-                    How It Works?
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/"
-                    className="hover:text-primary-500 duration-300 transition-all"
-                  >
-                    Features
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/"
-                    className="hover:text-primary-500 duration-300 transition-all"
-                  >
-                    Pricing
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/"
-                    className="hover:text-primary-500 duration-300 transition-all"
-                  >
-                    FAQ
-                  </Link>
-                </li>
+              <ul className="flex flex-1 text-secondary-900 gap-6 font-[400] mt-[2px] text-[15px] ml-10">
+                {navigationLinks.map((item) => (
+                  <li key={item.desktopKey}>
+                    <Link
+                      href={item.href}
+                      className="hover:text-primary-500 duration-300 transition-all"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="flex justify-end gap-2 lg:mr-[-6px]">
               {isSignedIn ? (
                 <div className="lg:hidden flex items-center gap-2">
-                  <Avatar className="h-[32px] w-[32px] hover:scale-105 duration-300 transition-all">
-                    <AvatarImage src={user?.imageUrl} alt={getDisplayName()} />
-                    <AvatarFallback className="bg-muted text-muted-foreground">
-                      {getAvatarFallback()}
-                    </AvatarFallback>
-                  </Avatar>
+                  <Image
+                    className="w-[28px] block box-shadow bg-primary-500 pt-[3px] pb-[4px] rounded-full h-[28px]"
+                    src={userSVG}
+                    alt="user"
+                  />
                   <button
                     onClick={() => setIsOpen(!isOpen)}
                     className="focus:outline-none"
@@ -223,39 +207,49 @@ export default function Header() {
               {/* Desktop Menu */}
               <div className="lg:flex hidden items-center">
                 {/* Contact Button */}
-                <span className="flex items-center gap-3 text-secondary-900 py-[7px] px-5 rounded-full font-[400] text-[15px] cursor-pointer hover:text-secondary-600 duration-200 transition-all">
-                  <Image
-                    width={17}
-                    height={17}
-                    src={contactSVG}
-                    alt="contact-svg"
-                    priority
-                  />
+                <span
+                  className={`${
+                    isSignedIn
+                      ? "flex box-shadow-black bg-gradient-to-b from-primary-400 to-primary-500 items-center gap-[11px] hover:bg-primary-600 pr-5 text-white mr-2 py-[7px] px-4 rounded-full font-[400] text-[15px] cursor-pointer duration-200 transition-all"
+                      : "flex box-shadow-black border border-secondary-300  items-center gap-[11px] pr-5 hover:bg-secondary-50 text-secondary-900 py-[6px] px-4  rounded-full font-[400] text-[15px] cursor-pointer duration-200 transition-all"
+                  }  hover:-translate-y-[2px] duration-300`}
+                >
+                  {isSignedIn ? (
+                    <Image
+                      src={callWhite}
+                      className={`${"w-[15px] h-[15px]"}`}
+                      alt="callWhite-svg"
+                      priority
+                    />
+                  ) : (
+                    <Image
+                      src={contactSVG}
+                      className={`${"w-[15px] h-[15px]"}`}
+                      alt="contact-svg"
+                      priority
+                    />
+                  )}
                   Contact
                 </span>
 
-                {/* User Menu / Sign Up Button */}
                 {isSignedIn ? (
                   <div className="flex items-center">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <div className="flex gap-3 rounded-full items-center cursor-pointer">
-                          <div className="w-[1px] h-[20px] rounded-full bg-secondary-100 mr-[10px]"></div>
-                          <Avatar className="h-[30px] w-[30px] hover:scale-105 duration-300 transition-all">
-                            <AvatarImage
-                              src={user?.imageUrl}
-                              alt={getDisplayName()}
+                        <div className="flex border border-secondary-200 box-shadow-black  hover:bg-secondary-50 duration-300 transition-all h-[38px] pl-[6px] px-4 gap-3 overflow-hidden rounded-full items-center cursor-pointer">
+                          <div className="overflow-hidden rounded-full block bg-transparent">
+                            <Image
+                              className="w-[25px] mt-[2px] block box-shadow bg-secondary-900 pt-[3px] pb-[4px] rounded-full h-[25px]"
+                              src={userSVG}
+                              alt="user"
                             />
-                            <AvatarFallback className="bg-muted text-muted-foreground">
-                              {getAvatarFallback()}
-                            </AvatarFallback>
-                          </Avatar>
+                          </div>
                           <span className="text-[15px] font-[600] text-secondary-900">
                             {getDisplayName()}
                           </span>
                           <Image
                             src={down}
-                            className="w-[11px] h-[11px] opacity-60 ml-[-4px]"
+                            className="w-[10px] max-xl:ml-[3px] ml-[4px] h-[10px] opacity-80"
                             alt="down-arrow"
                             priority
                           />
@@ -264,15 +258,11 @@ export default function Header() {
                       <PopoverContent className="flex flex-col p-4 border shadow-sm rounded-3xl mt-3 border-secondary-200">
                         <div className="flex outline-none border-none focus:border-none focus:outline-none flex-col gap-3 items-start">
                           <div className="flex focus:border-none focus:outline-none outline-none mb-[5px] w-full rounded-full mt-1 gap-3 items-center">
-                            <Avatar className="cursor-pointer h-[33px] w-[33px] hover:scale-105 duration-300 transition-all outline-none">
-                              <AvatarImage
-                                src={user?.imageUrl}
-                                alt={getDisplayName()}
-                              />
-                              <AvatarFallback className="bg-muted text-muted-foreground outline-none">
-                                {getAvatarFallback()}
-                              </AvatarFallback>
-                            </Avatar>
+                            <Image
+                              className="w-[30px] block box-shadow bg-primary-500 pt-[3px] pb-[4px] rounded-full h-[30px]"
+                              src={userSVG}
+                              alt="user"
+                            />
                             <span className="text-[16px] font-[600] text-second">
                               {getDisplayName()}
                             </span>
@@ -296,7 +286,7 @@ export default function Header() {
                   </div>
                 ) : (
                   <Link href="/sign-up">
-                    <Button className="flex hover:translate-y-[-2px] duration-300 transition-all select-none items-center gap-2 bg-gradient-to-b from-primary-400 to-primary-500 box-shadow text-white py-[9px] px-[22px] rounded-full font-[400] text-[15px] ml-2">
+                    <Button className="flex hover:translate-y-[-2px] duration-300 transition-all select-none items-center gap-2 bg-gradient-to-b from-primary-400 to-primary-500 box-shadow text-white px-[20px] rounded-full  font-[400] text-[15px] ml-2">
                       <Image
                         width={15}
                         height={15}
@@ -322,45 +312,20 @@ export default function Header() {
                 className="overflow-hidden"
               >
                 <div className="grid grid-cols-1 justify-center text-center border border-[#000/80] md:mt-5 mt-[13px] rounded-xl bg-[#f5f5f5]/30 backdrop-blur flex-col lg:hidden items-center gap-4 py-4 pb-8 px-6">
-                  <Link
-                    href="/dashboard"
-                    className="py-[3px] text-[15px] font-[500]"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span className="text-primary-500">✶</span> Dashboard
-                  </Link>
-                  <Link
-                    href="/"
-                    className="py-[3px] text-[15px] font-[500]"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span className="text-primary-500">✶</span> How It Works?
-                  </Link>
-                  <Link
-                    href="/"
-                    className="py-[3px] text-[15px] font-[500]"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span className="text-primary-500">✶</span> Features
-                  </Link>
-                  <Link
-                    href="/"
-                    className="py-[3px] text-[15px] font-[500]"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span className="text-primary-500">✶</span> Pricing
-                  </Link>
-                  <Link
-                    href="/"
-                    className="py-[3px] text-[15px] font-[500]"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <span className="text-primary-500">✶</span> FAQ
-                  </Link>
+                  {navigationLinks.map((item) => (
+                    <Link
+                      key={`mobile-${item.desktopKey}`}
+                      href={item.href}
+                      className="py-[3px] text-[15px] font-[500]"
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <span className="text-primary-500">✶</span> {item.label}
+                    </Link>
+                  ))}
                   {!isSignedIn ? (
                     <div>
                       <Button
-                        className="bg-primary-500 text-[15px] text-white py-3 rounded-full box-shadow-mobile px-4 gap-3 font-[600]"
+                        className="bg-primary-500 text-[15px] text-white rounded-full box-shadow-mobile px-4 gap-3 font-[600]"
                         onClick={() => setIsOpen(false)}
                       >
                         <Link href="/sign-up">Sign Up</Link>

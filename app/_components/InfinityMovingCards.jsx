@@ -62,7 +62,7 @@ export const InfiniteMovingCards = ({
         direction === "center" ? "forwards" : "reverse"
       );
 
-      const animationDuration = Math.min(Math.max(5, Math.abs(speed)), 30);
+      const animationDuration = Math.min(Math.max(15, Math.abs(speed)), 35);
       containerRef.current.style.setProperty(
         "--animation-duration",
         `${animationDuration}s`
@@ -78,9 +78,9 @@ export const InfiniteMovingCards = ({
       <blockquote>
         <div class="flex items-center justify-center">
           <div class="relative z-20 flex justify-center items-center">
-            <span class="flex flex-col justify-center">
+            <span class="flex flex-col  justify-center">
               <span class="text-[22px] leading-[1.6] text-black whitespace-nowrap font-bold">
-                <img src="${item.src}" alt="${item.alt}" class="w-[32px] h-[32px] md:w-[48px] md:h-[48px] xl:w-[55px] xl:h-[55px] hover:scale-105 transition-all duration-300"/>
+                <Image quality={100} src="${item.src}" alt="${item.alt}" class="w-[30px] mx-[3px] h-[30px] md:w-[46px] max-md:mt-[-9px] max-xl:mt-[-6px] md:h-[46px]  xl:w-[53px] xl:h-[53px] hover:scale-105 transition-all duration-300"/>
               </span>
             </span>
           </div>
@@ -114,12 +114,12 @@ export const InfiniteMovingCards = ({
             <blockquote>
               <div className="flex items-center justify-center">
                 <div className="relative z-20 flex justify-center items-center">
-                  <span className="flex max-md:mt-[-9px] max-lg:mt-[-7px] max-xl:mt-[-7px] mt-[0px] flex-col justify-center">
+                  <span className="flex flex-col justify-center">
                     <span className="text-[22px] leading-[1.6] text-black whitespace-nowrap font-bold">
                       <img
                         src={item.src}
                         alt={item.alt}
-                        className="w-[32px] h-[32px] md:w-[48px] md:h-[48px] xl:w-[55px] xl:h-[55px] hover:scale-105 transition-all duration-300"
+                        className="w-[30px] mt-[-4.5px] h-[30px] md:w-[46px] mx-[3px] max-md:mt-[-9px] max-xl:mt-[-6px] md:h-[46px] xl:w-[53px] xl:h-[53px] hover:scale-105 transition-all duration-300"
                       />
                     </span>
                   </span>
