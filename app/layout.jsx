@@ -1,6 +1,8 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Archivo } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner";
+import Provider from "./provider";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -19,7 +21,12 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${archivo.className} antialiased`}>{children}</body>
+        <body className={`${archivo.className} antialiased`}>
+          <Provider>
+            {children}
+            <Toaster />
+          </Provider>
+        </body>
       </html>
     </ClerkProvider>
   );

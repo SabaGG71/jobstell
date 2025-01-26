@@ -13,7 +13,6 @@ export default function QuestionsSection({
     }
   };
 
-  // Ensure questions is always an array
   const questions = Array.isArray(mockInterviewQuestion)
     ? mockInterviewQuestion
     : mockInterviewQuestion?.interviewQuestions ||

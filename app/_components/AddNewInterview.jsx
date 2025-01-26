@@ -19,11 +19,13 @@ import { Input } from "@/components/ui/input";
 import { chatSession } from "@/utils/GeminiAIModal";
 import { LoaderCircle } from "lucide-react";
 import { db } from "@/utils/db";
-import { JobInterview } from "@/utils/schema";
+import { JobInterview, UserAnswer } from "@/utils/schema";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/clerk-react";
 import moment from "moment/moment";
 import { useRouter } from "next/navigation";
+import axios from "axios";
+import Link from "next/link";
 
 export default function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -143,6 +145,9 @@ export default function AddNewInterview() {
       >
         <h2 className="font-bold text-lg">+ Add New</h2>
       </div>
+
+      <Link href="/dashboard/upgrade">Pricing</Link>
+
       <Dialog open={openDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
