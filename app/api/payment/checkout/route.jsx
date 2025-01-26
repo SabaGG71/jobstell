@@ -1,11 +1,18 @@
+// api/payment/checkout/route.jsx
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { headers } from "next/headers";
 
-// In the Stripe payment route (route.js)
 export async function POST(req) {
   try {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
     const body = await req.json();
+
+    // Get the host dynamically
+    const headersList = headers();
+    const host = headersList.get("host");
+    const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+    const baseUrl = `${protocol}://${host}`;
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -15,8 +22,8 @@ export async function POST(req) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.HOST_URL}payment-success?email=${body.email}`,
-      cancel_url: process.env.HOST_URL,
+      success_url: `${baseUrl}/payment-success?email=${body.email}`,
+      cancel_url: baseUrl,
     });
 
     return NextResponse.json(session);
