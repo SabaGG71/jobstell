@@ -26,6 +26,16 @@ export default {
       },
     },
     extend: {
+      keyframes: {
+        scroll: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(calc(-50%))" },
+        },
+        "scroll-reverse": {
+          "0%": { transform: "translateX(calc(-50%))" },
+          "100%": { transform: "translateX(0)" },
+        },
+      },
       animation: {
         spotlight: "spotlight 2s ease .75s 1 forwards",
         scroll:

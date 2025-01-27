@@ -239,7 +239,7 @@ export default function Header() {
                         <div className="flex border border-secondary-200 box-shadow-black  hover:bg-secondary-50 duration-300 transition-all h-[38px] pl-[6px] px-4 gap-3 overflow-hidden rounded-full items-center cursor-pointer">
                           <div className="overflow-hidden rounded-full block bg-transparent">
                             <Image
-                              className="w-[25px] mt-[2px] block box-shadow bg-secondary-900 pt-[3px] pb-[4px] rounded-full h-[25px]"
+                              className="w-[25px] mt-[2px] block box-shadow-black bg-secondary-700 pt-[3px] pb-[4px] rounded-full h-[25px]"
                               src={userSVG}
                               alt="user"
                             />

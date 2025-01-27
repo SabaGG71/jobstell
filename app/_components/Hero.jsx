@@ -6,13 +6,14 @@ import { DotBackgroundDemo } from "./DotBackgroundDemo";
 import { InfiniteMovingCardsDemo } from "./InfiniteMovingCardsDemo";
 import { InfiniteMovingCardsDemo2 } from "./InfiniteMovingCardsDemo2";
 import Link from "next/link";
+import HeroCheck from "./HeroCheck";
 
 export default function Hero() {
   return (
     <section className="relative h-[80vh] w-full">
       <DotBackgroundDemo />
       <div className="flex justify-center items-center pt-[180px] flex-col z-30 relative">
-        <h1 className="max-sm:text-3xl max-sm:mb-3 max-md:text-[40px] leading-[30px] md:text-[53px] xl:text-[60px] mb-[22px] md:mb-[45px] xl:mb-[20px] xl:max-w-[60%]  xl:leading-[90px] mx-auto text-center text-secondary-700 font-[600]">
+        <h1 className="max-sm:text-3xl max-sm:mb-3 max-md:text-[40px] leading-[30px] md:text-[53px] xl:text-[60px] mb-[22px] md:mb-[45px] xl:mb-[19px] xl:max-w-[60%]  xl:leading-[90px] mx-auto text-center text-secondary-700 font-[600]">
           Your Interview Success
         </h1>
         <div className="flex  max-md:mt-0 mx-auto container mt-[-11px] items-center gap-3">
@@ -40,6 +41,7 @@ export default function Hero() {
           </button>
         </div>
       </div>
+      <div>{/* <HeroCheck /> */}</div>
     </section>
   );
 }

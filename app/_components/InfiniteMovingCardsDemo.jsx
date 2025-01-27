@@ -18,8 +18,8 @@ export function InfiniteMovingCardsDemo() {
 
 const testimonials = [
   { src: "/sad-1.svg", alt: "Sad face 1" },
-  { src: "/sad-2.svg", alt: "Sad face 2" },
-  { src: "/sad-3.svg", alt: "Sad face 3" },
   { src: "/sad-4.svg", alt: "Sad face 4" },
+  { src: "/sad-3.svg", alt: "Sad face 3" },
+  { src: "/sad-2.svg", alt: "Sad face 2" },
   { src: "/sad-5.svg", alt: "Sad face 5" },
 ];

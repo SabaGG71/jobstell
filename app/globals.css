@@ -103,6 +103,36 @@ button {
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
 }
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%)); /* Adjust for gap compensation */
+  }
+}
+
+.animate-scroll {
+  animation: scroll var(--animation-duration, 400s)
+    var(--animation-direction, forwards) linear infinite;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;
