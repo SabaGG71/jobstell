@@ -42,16 +42,7 @@ export default function AddNewInterview() {
     e.preventDefault();
     console.log(jobPostion, jobDesc, jobExperience);
 
-    const inputPrompt =
-      "Job Position: " +
-      jobPostion +
-      ", Job Description: " +
-      jobDesc +
-      ", Years of experience: " +
-      jobExperience +
-      ", depends on job position, job description and years of experience, give me " +
-      process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT +
-      " interview questions along with answers in JSON format, give me question and answer field on JSON";
+    const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Details: Job Position: ${jobPostion}  Job Description: ${jobDesc}, Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. Questions should reflect the difficulty level appropriate for someone with one year of experience.`;
 
     try {
       const result = await chatSession.sendMessage(inputPrompt);

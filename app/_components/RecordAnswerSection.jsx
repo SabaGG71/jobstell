@@ -128,9 +128,22 @@ export default function RecordAnswerSection({
         throw new Error("Question not found");
       }
 
-      const feedbackPrompt =
-        `Question: ${currentQuestion}\nUser Answer: ${transcribedText}\n` +
-        "Please provide a rating and feedback for this interview answer in 4-6 lines in JSON format with 'rating' and 'feedback' fields";
+      const feedbackPrompt = `Analyze the following input: Question: ${currentQuestion}
+      User Answer: ${transcribedText}
+
+Provide the following outputs in JSON format:
+
+Rating: Assign a score from 1 to 10 based on how well the user's answer addresses the question. Consider factors like accuracy, clarity, technical depth, and suitability for a real interview.
+
+Feedback: Provide detailed feedback on the answer, ensuring it covers the following: Analyze the user's answer thoroughly and identify strengths as well as specific areas for improvement.
+
+Highlight inaccuracies, missing details, or opportunities to add depth or clarity.
+
+Provide clear guidance on how to improve the answer, ensuring the feedback reflects the most critical points that would make the answer interview-ready.
+
+Study-materials: If the user's answer lacks depth or contains inaccuracies, provide a link to the most relevant and reliable source where the specific topic is discussed in-depth. The link should directly redirect the user to the part of the source where the concept is explained. Along with the link, include a sentence such as "You can study the topic in more depth from the source." Ensure that the source link is the most up-to-date version available and that the link provided is valid and does not lead to a "not found" page.
+
+The output must contain three fields in JSON with no additional or nested fields: rating, feedback, and study-materials. give me youtube video which explains the question, and other most reliable and relevant source to study the question's topic from.`;
 
       const result = await chatSession.sendMessage(feedbackPrompt);
       const mockJsonResp = result.response

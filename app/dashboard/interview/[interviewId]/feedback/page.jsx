@@ -60,7 +60,7 @@ export default function page({ params }) {
               Your overall interview rating:{" "}
               <strong>
                 {calculateOverallRating()}
-                /5
+                /10
               </strong>
             </h2>
 

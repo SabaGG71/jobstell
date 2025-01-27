@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { db } from "@/utils/db";
 import { JobInterview } from "@/utils/schema";
 import { eq } from "drizzle-orm";
-import Link from "next/link";
 
 export default function Page({ params }) {
   const router = useRouter();
@@ -87,7 +86,7 @@ export default function Page({ params }) {
         {activeQuestionIndex > 0 && (
           <Button
             onClick={() => setActiveQuestionIndex(activeQuestionIndex - 1)}
-          > 
+          >
             Previous Question
           </Button>
         )}
