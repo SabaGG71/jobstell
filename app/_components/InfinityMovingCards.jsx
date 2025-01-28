@@ -128,7 +128,7 @@ export const InfiniteMovingCards = ({
                       <img
                         src={item.src}
                         alt={item.alt}
-                        className="w-[34px] mt-[-4px] h-[34px] md:w-[46px] max-md:mt-[-10px] max-xl:mt-[-6px] md:h-[46px] xl:w-[52px] xl:h-[52px] hover:scale-105 transition-all duration-300"
+                        className="w-[34px] mt-[-4px] h-[34px] md:w-[46px] max-md:mt-[-11px] max-xl:mt-[-6px] md:h-[46px] xl:w-[52px] xl:h-[52px] hover:scale-105 transition-all duration-300"
                       />
                     </span>
                   </span>
