@@ -99,7 +99,7 @@ export const InfiniteMovingCards = ({
         className
       )}
     >
-      <div className="w-full absolute inset-0 pointer-events-none [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
+      <div className="w-full  absolute inset-0 pointer-events-none [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       <ul
         ref={scrollerRef}
         className={cn(
@@ -114,7 +114,7 @@ export const InfiniteMovingCards = ({
       >
         {items.map((item, idx) => (
           <li
-            className="relative rounded-2xl flex-shrink-0 px-[15px] py-4"
+            className="relative  rounded-2xl flex-shrink-0 px-[15px] max-md:px-[12px] py-4"
             key={`${item.src}-${idx}`}
             style={{
               marginRight: "4px", // Consistent spacing between items
@@ -128,7 +128,7 @@ export const InfiniteMovingCards = ({
                       <img
                         src={item.src}
                         alt={item.alt}
-                        className="w-[30px] mt-[-4px] h-[30px] md:w-[46px] max-md:mt-[-9px] max-xl:mt-[-6px] md:h-[46px] xl:w-[52px] xl:h-[52px] hover:scale-105 transition-all duration-300"
+                        className="w-[34px] mt-[-4px] h-[34px] md:w-[46px] max-md:mt-[-10px] max-xl:mt-[-6px] md:h-[46px] xl:w-[52px] xl:h-[52px] hover:scale-105 transition-all duration-300"
                       />
                     </span>
                   </span>

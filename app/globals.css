@@ -133,6 +133,33 @@ button {
   animation: scroll var(--animation-duration, 400s)
     var(--animation-direction, forwards) linear infinite;
 }
+.line {
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0) 0%,
+    #21212138 48.1981981981982%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+/* Add these to your globals.css or tailwind.config.js */
+.scroller {
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    white 20%,
+    white 80%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    white 20%,
+    white 80%,
+    transparent
+  );
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

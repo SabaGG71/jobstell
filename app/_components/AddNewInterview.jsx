@@ -24,7 +24,6 @@ import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/clerk-react";
 import moment from "moment/moment";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import Link from "next/link";
 
 export default function AddNewInterview() {

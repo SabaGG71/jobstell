@@ -27,6 +27,7 @@ export default function RecordAnswerSection({
   const [retryCount, setRetryCount] = useState(0);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
+  const streamRef = useRef(null);
   const router = useRouter();
 
   const questions = Array.isArray(mockInterviewQuestion)
@@ -37,6 +38,12 @@ export default function RecordAnswerSection({
 
   useEffect(() => {
     checkDeviceSupport();
+    return () => {
+      // Cleanup function to ensure streams are properly closed
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+    };
   }, []);
 
   const checkDeviceSupport = async () => {
@@ -46,17 +53,45 @@ export default function RecordAnswerSection({
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          sampleRate: 44100, // Standard sample rate that works well across devices
+          channelCount: 1, // Mono recording for better compatibility
         },
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       stream.getTracks().forEach((track) => track.stop());
       setDeviceSupported(true);
     } catch (error) {
+      console.error("Device support check failed:", error);
       setDeviceSupported(false);
       toast.error(
         "Your device may not support audio recording. Please check browser permissions."
       );
     }
+  };
+
+  const getSupportedMimeType = () => {
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const types = [
+      "audio/webm;codecs=opus",
+      "audio/webm",
+      "audio/ogg;codecs=opus",
+      "audio/mp4",
+      "audio/wav",
+    ];
+
+    // Prefer more compatible formats for Android
+    if (isAndroid) {
+      types.unshift("audio/webm;codecs=opus");
+      types.unshift("audio/ogg;codecs=opus");
+    }
+
+    for (const type of types) {
+      if (MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    }
+
+    return "audio/webm"; // Fallback format
   };
 
   const handleTranscriptionResponse = async (response) => {
@@ -83,41 +118,54 @@ export default function RecordAnswerSection({
 
   const startRecording = async () => {
     try {
+      // Enhanced audio constraints for better mobile compatibility
       const constraints = {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
+          sampleRate: 44100,
+          channelCount: 1,
+          latency: 0,
+          sampleSize: 16,
         },
       };
+
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streamRef.current = stream;
+
+      const mimeType = getSupportedMimeType();
       const options = {
-        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
-          ? "audio/webm;codecs=opus"
-          : MediaRecorder.isTypeSupported("audio/mp4")
-          ? "audio/mp4"
-          : "audio/wav",
+        mimeType,
+        audioBitsPerSecond: 128000, // Consistent bitrate across devices
       };
 
-      mediaRecorderRef.current = new MediaRecorder(stream, options);
+      const mediaRecorder = new MediaRecorder(stream, options);
+      mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
-      mediaRecorderRef.current.ondataavailable = (event) => {
+      mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
           chunksRef.current.push(event.data);
         }
       };
 
-      mediaRecorderRef.current.onstop = async () => {
+      mediaRecorder.onstop = async () => {
         try {
           const audioBlob = new Blob(chunksRef.current, {
-            type: options.mimeType,
+            type: mimeType,
           });
+
+          // Ensure the blob is valid
+          if (audioBlob.size === 0) {
+            throw new Error("No audio data recorded");
+          }
+
           const formData = new FormData();
           formData.append(
             "file",
             audioBlob,
-            "audio." + options.mimeType.split("/")[1]
+            `audio.${mimeType.split(";")[0].split("/")[1]}`
           );
 
           isLoading(true);
@@ -151,16 +199,18 @@ export default function RecordAnswerSection({
             throw new Error("Failed to transcribe after multiple attempts");
           }
         } catch (error) {
+          console.error("Recording processing error:", error);
           toast.error(error.message || "Failed to transcribe audio");
         } finally {
           isLoading(false);
         }
       };
 
-      mediaRecorderRef.current.start(1000);
+      mediaRecorder.start(1000);
       setIsRecording(true);
       toast.success("Recording started");
     } catch (error) {
+      console.error("Recording start error:", error);
       if (error.name === "NotAllowedError") {
         toast.error(
           "Microphone access denied. Please check your browser permissions."
@@ -185,12 +235,16 @@ export default function RecordAnswerSection({
       try {
         mediaRecorderRef.current.stop();
         setIsRecording(false);
-        if (mediaRecorderRef.current.stream) {
-          mediaRecorderRef.current.stream
-            .getTracks()
-            .forEach((track) => track.stop());
+
+        // Properly cleanup the stream
+        if (streamRef.current) {
+          streamRef.current.getTracks().forEach((track) => {
+            track.stop();
+          });
+          streamRef.current = null;
         }
       } catch (error) {
+        console.error("Stop recording error:", error);
         toast.error("Error stopping recording");
         setIsRecording(false);
       }
@@ -236,7 +290,9 @@ export default function RecordAnswerSection({
               eq(UserAnswer.userEmail, user.primaryEmailAddress.emailAddress)
             )
           );
-      } catch (deleteError) {}
+      } catch (deleteError) {
+        console.error("Delete error:", deleteError);
+      }
 
       await db.insert(UserAnswer).values({
         mockIdRef: interviewData.mockJobId || "",
@@ -250,11 +306,8 @@ export default function RecordAnswerSection({
       });
 
       toast.success("Answer recorded successfully");
-
-      if (activeQuestionIndex === questions.length - 1) {
-        router.push(`/feedback/${interviewData.mockJobId}`);
-      }
     } catch (error) {
+      console.error("Process answer error:", error);
       toast.error(error.message || "Failed to process answer");
     }
   };
