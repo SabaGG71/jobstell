@@ -17,9 +17,9 @@ export function InfiniteMovingCardsDemo2() {
 }
 
 const testimonials = [
-  { src: "/happy-1.svg", alt: "happy face 1" },
-  { src: "/happy-4.svg", alt: "happy face 4" },
-  { src: "/happy-3.svg", alt: "happy face 3" },
-  { src: "/happy-2.svg", alt: "happy face 2" },
-  { src: "/happy-5.svg", alt: "happy face 5" },
+  { src: "/happy-1.png", alt: "happy face 1" },
+  { src: "/happy-4.png", alt: "happy face 4" },
+  { src: "/happy-3.png", alt: "happy face 3" },
+  { src: "/happy-2.png", alt: "happy face 2" },
+  { src: "/happy-5.png", alt: "happy face 5" },
 ];
