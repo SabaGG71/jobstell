@@ -23,6 +23,8 @@ export default function RecordAnswerSection({
   const { user } = useUser();
   const [loading, isLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
+  const [deviceSupported, setDeviceSupported] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
   const mediaRecorderRef = useRef(null);
   const chunksRef = useRef([]);
   const router = useRouter();
@@ -33,16 +35,46 @@ export default function RecordAnswerSection({
       mockInterviewQuestion?.interview_questions ||
       [];
 
+  useEffect(() => {
+    checkDeviceSupport();
+  }, []);
+
+  const checkDeviceSupport = async () => {
+    try {
+      const constraints = {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      stream.getTracks().forEach((track) => track.stop());
+      setDeviceSupported(true);
+    } catch (error) {
+      setDeviceSupported(false);
+      toast.error(
+        "Your device may not support audio recording. Please check browser permissions."
+      );
+    }
+  };
+
   const handleTranscriptionResponse = async (response) => {
     if (!response.ok) {
+      if (response.status === 504 && retryCount < 3) {
+        const waitTime = Math.pow(2, retryCount) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        setRetryCount((prev) => prev + 1);
+        throw new Error("RETRY");
+      }
       const errorText = await response.text();
       throw new Error(
         `HTTP error! status: ${response.status}, body: ${errorText}`
       );
     }
-
     try {
       const data = await response.json();
+      setRetryCount(0);
       return data;
     } catch (error) {
       throw new Error(`JSON parsing error: ${error.message}`);
@@ -51,10 +83,23 @@ export default function RecordAnswerSection({
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaRecorderRef.current = new MediaRecorder(stream, {
-        mimeType: "audio/webm;codecs=opus",
-      });
+      const constraints = {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      const options = {
+        mimeType: MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+          ? "audio/webm;codecs=opus"
+          : MediaRecorder.isTypeSupported("audio/mp4")
+          ? "audio/mp4"
+          : "audio/wav",
+      };
+
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
       chunksRef.current = [];
 
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -65,30 +110,47 @@ export default function RecordAnswerSection({
 
       mediaRecorderRef.current.onstop = async () => {
         try {
-          const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
+          const audioBlob = new Blob(chunksRef.current, {
+            type: options.mimeType,
+          });
           const formData = new FormData();
-          formData.append("file", audioBlob, "audio.webm");
+          formData.append(
+            "file",
+            audioBlob,
+            "audio." + options.mimeType.split("/")[1]
+          );
 
           isLoading(true);
-          const response = await fetch("/api/transcribe", {
-            method: "POST",
-            body: formData,
-          });
+          let transcriptionSuccess = false;
+          let retryAttempt = 0;
 
-          const data = await handleTranscriptionResponse(response);
+          while (!transcriptionSuccess && retryAttempt < 3) {
+            try {
+              const response = await fetch("/api/transcribe", {
+                method: "POST",
+                body: formData,
+              });
 
-          if (data.error) {
-            throw new Error(data.error);
+              const data = await handleTranscriptionResponse(response);
+
+              if (data.transcription) {
+                transcriptionSuccess = true;
+                setUserAnswer(data.transcription);
+                await processTranscribedAnswer(data.transcription);
+              }
+            } catch (error) {
+              if (error.message === "RETRY") {
+                retryAttempt++;
+                continue;
+              }
+              throw error;
+            }
           }
 
-          if (data.transcription) {
-            setUserAnswer(data.transcription);
-            await processTranscribedAnswer(data.transcription);
-          } else {
-            throw new Error("No transcription received");
+          if (!transcriptionSuccess) {
+            throw new Error("Failed to transcribe after multiple attempts");
           }
         } catch (error) {
-          console.error("Transcription error:", error);
           toast.error(error.message || "Failed to transcribe audio");
         } finally {
           isLoading(false);
@@ -99,19 +161,38 @@ export default function RecordAnswerSection({
       setIsRecording(true);
       toast.success("Recording started");
     } catch (error) {
-      console.error("Error starting recording:", error);
-      toast.error("Failed to start recording");
+      if (error.name === "NotAllowedError") {
+        toast.error(
+          "Microphone access denied. Please check your browser permissions."
+        );
+      } else if (error.name === "NotFoundError") {
+        toast.error("No microphone found. Please check your device settings.");
+      } else if (error.name === "NotReadableError") {
+        toast.error(
+          "Cannot access microphone. It might be in use by another application."
+        );
+      } else {
+        toast.error(
+          "Failed to start recording. Please check your device settings."
+        );
+      }
+      setIsRecording(false);
     }
   };
 
   const stopRecording = () => {
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-      if (mediaRecorderRef.current.stream) {
-        mediaRecorderRef.current.stream
-          .getTracks()
-          .forEach((track) => track.stop());
+      try {
+        mediaRecorderRef.current.stop();
+        setIsRecording(false);
+        if (mediaRecorderRef.current.stream) {
+          mediaRecorderRef.current.stream
+            .getTracks()
+            .forEach((track) => track.stop());
+        }
+      } catch (error) {
+        toast.error("Error stopping recording");
+        setIsRecording(false);
       }
     }
   };
@@ -128,56 +209,42 @@ export default function RecordAnswerSection({
         throw new Error("Question not found");
       }
 
-      const feedbackPrompt = `Analyze the following input: Question: ${currentQuestion}
+      const result =
+        await chatSession.sendMessage(`Analyze the following input: Question: ${currentQuestion}
       User Answer: ${transcribedText}
+      Provide a JSON response with exactly these three fields:
+      {
+        "rating": (a number between 1-10),
+        "feedback": (detailed analysis of the answer),
+        "study-materials": (relevant resources for improvement)
+      }`);
 
-Provide the following outputs in JSON format:
+      const responseText = result.response.text();
+      const jsonStartIndex = responseText.indexOf("{");
+      const jsonEndIndex = responseText.lastIndexOf("}");
+      const jsonStr = responseText.substring(jsonStartIndex, jsonEndIndex + 1);
 
-Rating: Assign a score from 1 to 10 based on how well the user's answer addresses the question. Consider factors like accuracy, clarity, technical depth, and suitability for a real interview.
+      const jsonFeedbackResp = JSON.parse(jsonStr);
 
-Feedback: Provide detailed feedback on the answer, ensuring it covers the following: Analyze the user's answer thoroughly and identify strengths as well as specific areas for improvement.
-
-Highlight inaccuracies, missing details, or opportunities to add depth or clarity.
-
-Provide clear guidance on how to improve the answer, ensuring the feedback reflects the most critical points that would make the answer interview-ready.
-
-Study-materials: If the user's answer lacks depth or contains inaccuracies, provide a link to the most relevant and reliable source where the specific topic is discussed in-depth. The link should directly redirect the user to the part of the source where the concept is explained. Along with the link, include a sentence such as "You can study the topic in more depth from the source." Ensure that the source link is the most up-to-date version available and that the link provided is valid and does not lead to a "not found" page.
-
-The output must contain three fields in JSON with no additional or nested fields: rating, feedback, and study-materials. give me youtube video which explains the question, and other most reliable and relevant source to study the question's topic from.`;
-
-      const result = await chatSession.sendMessage(feedbackPrompt);
-      const mockJsonResp = result.response
-        .text()
-        .replace(/```json\s*|\s*```/g, "")
-        .trim();
-
-      let jsonFeedbackResp;
       try {
-        jsonFeedbackResp = JSON.parse(mockJsonResp);
-      } catch (error) {
-        console.error("Error parsing AI response:", error);
-        throw new Error("Failed to parse AI feedback");
-      }
+        await db
+          .delete(UserAnswer)
+          .where(
+            and(
+              eq(UserAnswer.mockIdRef, interviewData.mockJobId || ""),
+              eq(UserAnswer.question, currentQuestion),
+              eq(UserAnswer.userEmail, user.primaryEmailAddress.emailAddress)
+            )
+          );
+      } catch (deleteError) {}
 
-      // Delete existing answer if any
-      await db
-        .delete(UserAnswer)
-        .where(
-          and(
-            eq(UserAnswer.mockIdRef, interviewData.mockJobId || ""),
-            eq(UserAnswer.question, currentQuestion),
-            eq(UserAnswer.userEmail, user.primaryEmailAddress.emailAddress)
-          )
-        );
-
-      // Insert new answer
       await db.insert(UserAnswer).values({
         mockIdRef: interviewData.mockJobId || "",
         question: currentQuestion,
         correctAns: questions[activeQuestionIndex]?.answer || "",
         userAns: transcribedText,
-        feedback: jsonFeedbackResp?.feedback || "",
-        rating: jsonFeedbackResp?.rating || "",
+        feedback: jsonFeedbackResp.feedback || "",
+        rating: String(jsonFeedbackResp.rating) || "0",
         userEmail: user.primaryEmailAddress.emailAddress,
         createdAt: moment().format("DD-MM-YYYY"),
       });
@@ -188,7 +255,6 @@ The output must contain three fields in JSON with no additional or nested fields
         router.push(`/feedback/${interviewData.mockJobId}`);
       }
     } catch (error) {
-      console.error("Error processing answer:", error);
       toast.error(error.message || "Failed to process answer");
     }
   };
@@ -214,6 +280,7 @@ The output must contain three fields in JSON with no additional or nested fields
         <Webcam
           style={{ zIndex: 10, width: "100%", height: 300 }}
           mirrored={true}
+          audio={false}
         />
       </div>
       <div className="text-center mb-4">
@@ -221,21 +288,28 @@ The output must contain three fields in JSON with no additional or nested fields
           Question {activeQuestionIndex + 1} of {questions.length}
         </p>
       </div>
-      <Button
-        disabled={loading}
-        onClick={handleRecording}
-        variant="outline"
-        className="my-10"
-      >
-        {isRecording ? (
-          <span className="flex text-red-500 items-center gap-2">
-            <Mic />
-            Recording...
-          </span>
-        ) : (
-          "Start Recording"
-        )}
-      </Button>
+      {!deviceSupported ? (
+        <p className="text-red-500 mb-4">
+          Your device or browser may not support audio recording. Please try
+          using a different browser or device.
+        </p>
+      ) : (
+        <Button
+          disabled={loading}
+          onClick={handleRecording}
+          variant="outline"
+          className="my-10"
+        >
+          {isRecording ? (
+            <span className="flex text-red-500 items-center gap-2">
+              <Mic />
+              Recording...
+            </span>
+          ) : (
+            "Start Recording"
+          )}
+        </Button>
+      )}
       {loading && <p className="text-gray-500">Processing your answer...</p>}
     </div>
   );
