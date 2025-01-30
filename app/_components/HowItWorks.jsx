@@ -35,7 +35,7 @@ export default function HowItWorks() {
             />
           </div>
           <div className="flex flex-col max-xl:text-center max-xl:justify-center max-xl:items-center">
-            <h2 className="text-[34px] max-2xl:pt-6 max-2xl:max-w-[80%] max-md:pt-[80px] max-md:text-[30px] max-md:max-w-[85%] max-sm:pt-[45px] max-sm:text-[24px] max-sm:leading-8 mt-[60px] font-[600] xl:font-[400] leading-[44px] lg:max-w-[90%] text-secondary-600 mb-5">
+            <h2 className="text-[34px] max-2xl:pt-6 max-2xl:max-w-[80%] max-md:pt-[80px] max-md:text-[30px] max-md:max-w-[90%] max-sm:pt-[45px] max-sm:text-[24px] max-sm:leading-8 mt-[60px] font-[600] xl:font-[400] leading-[44px] lg:max-w-[90%] text-secondary-600 mb-5">
               Prepare, practice, and{" "}
               <span className="text-secondary-700">
                 succeed with AI interviews.
