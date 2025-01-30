@@ -71,7 +71,7 @@ const Noise = ({
 
   return (
     <canvas
-      className="absolute mt-24 border-8 border-primary-50 rounded-3xl bg-gradient-to-b from-primary-50 to-primary-50 inset-0 w-full h-full"
+      className="absolute mt-24 border-8 border-[#fcf8ff] rounded-3xl bg-gradient-to-b from-[#fcf8ff] to-[#fcf8ff] inset-0 w-full h-full"
       ref={grainRef}
     />
   );
