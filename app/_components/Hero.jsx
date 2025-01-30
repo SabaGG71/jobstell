@@ -7,7 +7,7 @@ import { InfiniteMovingCardsDemo } from "./InfiniteMovingCardsDemo";
 import { InfiniteMovingCardsDemo2 } from "./InfiniteMovingCardsDemo2";
 import Link from "next/link";
 import { InfiniteMovingCardsDemo3 } from "./InfiniteMovingCardsDemo3";
-
+import HowItWorks from "./HowItWorks";
 export default function Hero() {
   return (
     <section className="relative w-full">
@@ -56,6 +56,7 @@ export default function Hero() {
           <InfiniteMovingCardsDemo3 />
         </div>
       </div>
+      <HowItWorks />
     </section>
   );
 }

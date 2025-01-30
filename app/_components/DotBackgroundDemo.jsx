@@ -6,7 +6,7 @@ export function DotBackgroundDemo() {
       <div
         className="absolute inset-0"
         style={{
-          opacity: 0.13,
+          opacity: 0.12,
           borderRadius: "50px",
           backgroundImage: `radial-gradient(#212121 1.5px, transparent 1px), radial-gradient(#212121 1.5px, transparent 1px)`,
           backgroundSize: "30px 30px",

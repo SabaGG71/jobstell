@@ -35,6 +35,20 @@
     transparent
   );
 }
+@media (min-width: 1280px) {
+  .masky-2 {
+    mask-image: linear-gradient(to bottom, #03040a, #03040a 65%, transparent);
+  }
+}
+.masky-girl {
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #03040a 0%,
+    #03040a 90%,
+    transparent
+  );
+}
 .masky-bg {
   mask-image: linear-gradient(
     to top,
@@ -159,7 +173,9 @@ button {
     transparent
   );
 }
-
+.shadow-boxy {
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 14px 0px;
+}
 @layer base {
   :root {
     --background: 0 0% 100%;

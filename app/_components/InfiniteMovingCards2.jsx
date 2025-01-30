@@ -86,17 +86,17 @@ export const InfiniteMovingCards2 = ({
       )}
     >
       <div className="flex flex-col max-md:mt-[80px] mt-12 md:flex-row justify-center items-center gap-2">
-        <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-gray-200 transform transition-all duration-300" />
-        <p className="text-center text-secondary-500 text-sm md:text-[15px] font-[400]">
+        <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-secondary-100 transform transition-all duration-300" />
+        <p className="text-center mx-1 text-secondary-500 text-sm md:text-[15px] font-[400]">
           What We Offer
         </p>
-        <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-gray-200 transform transition-all duration-300" />
+        <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-secondary-100 transform transition-all duration-300" />
       </div>
 
       <ul
         ref={scrollerRef}
         className={cn(
-          "flex min-w-full shrink-0 gap-10 py-4 w-max flex-nowrap",
+          "flex min-w-full outline-none shrink-0 gap-10 py-4 w-max flex-nowrap",
           "transition-transform duration-500 ease-in-out",
           start && "animate-scroll",
           pauseOnHover && "hover:[animation-play-state:paused]"
@@ -105,18 +105,18 @@ export const InfiniteMovingCards2 = ({
         {items.map((item, idx) => (
           <li
             key={idx}
-            className="flex-shrink-0 w-auto transform transition-all duration-300 cursor-pointer "
+            className="flex-shrink-0 outline-none w-auto transform transition-all duration-300 cursor-pointer "
           >
-            <div className="relative z-20 flex items-center group">
-              <span className="flex items-center gap-2 py-2 rounded-full backdrop-blur-sm transition-all duration-300">
+            <div className="relative outline-none z-20 flex items-center group">
+              <span className="flex outline-none items-center gap-2 py-2 rounded-full backdrop-blur-sm transition-all duration-300">
                 <Image
-                  className="w-4 h-4 md:w-5 md:h-5   transition-opacity  duration-300"
+                  className="w-4 h-4 outline-none md:w-5 md:h-5   transition-opacity  duration-300"
                   width={20}
                   height={20}
                   src={item.src}
                   alt={item.alt}
                 />
-                <span className="text-sm md:text-[15px] text-secondary-500 group-hover:text-secondary-900 transition-colors duration-300">
+                <span className="text-sm outline-none md:text-[15px] text-secondary-500 group-hover:text-secondary-900 transition-colors duration-300">
                   {item.title}
                 </span>
               </span>
