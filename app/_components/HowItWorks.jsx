@@ -8,7 +8,7 @@ import morestar from "../../public/starmore.svg";
 export default function HowItWorks() {
   return (
     <section className="mb-20 relative mt-[-10px] md:mb-[300px]">
-      <div className="max-w-[1050px] overflow-hidden max-xl:max-w-[80%] w-full masky-2 mx-auto relative xl:px-6">
+      <div className="max-w-[1080px] overflow-hidden max-xl:max-w-[80%] w-full masky-2 mx-auto relative xl:px-6">
         <div
           className="absolute inset-0 z-0 max-sm:h-[350px] h-[450px]"
           style={{
