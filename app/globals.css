@@ -113,9 +113,18 @@ button {
   outline: none !important;
 }
 .box-shadow-card {
-  border: 1px solid #2121212c;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
+}
+.box-shadow-card-2 {
+  box-shadow: rgba(50, 50, 93, 0.064) 0px 50px 100px -20px,
+    rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
+}
+@media (max-width: 1124px) {
+  .box-shadow-card-3 {
+    box-shadow: rgba(50, 50, 93, 0.064) 0px 50px 100px -20px,
+      rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
+  }
 }
 @keyframes scroll {
   from {

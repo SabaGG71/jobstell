@@ -323,9 +323,9 @@ export default function Header() {
                     </Link>
                   ))}
                   {!isSignedIn ? (
-                    <div>
+                    <div className="flex items-center justify-center text-center">
                       <Button
-                        className="bg-primary-500 text-[15px] text-white rounded-full box-shadow-mobile px-4 gap-3 font-[600]"
+                        className="bg-primary-500 flex flex-col text-center text-[15px] justify-center items-center text-white rounded-full box-shadow-mobile px-4 gap-3 font-[600]"
                         onClick={() => setIsOpen(false)}
                       >
                         <Link href="/sign-up">Sign Up</Link>
