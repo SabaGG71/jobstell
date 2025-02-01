@@ -5,13 +5,13 @@ import rocket from "../../public/racket.svg";
 
 export default function Steps() {
   return (
-    <section className="container max-w-[80%] lg:max-w-[1080px] relative z-10 mt-[70px] mx-auto">
-      <div className="grid containermx-auto grid-cols-1 items-center justify-center sm:grid-cols-1 max-xl:max-w-[80%] max-lg:max-w-full mx-auto md:grid-cols-2 lg:grid-cols-2 relative gap-6 xl:grid-cols-3">
-        <div className="relative p-4 py-6 max-lg:border border-secondary-50 box-shadow-card-3 rounded-3xl">
-          <div className="flex gap-4  items-center">
-            <span className="border-4 border-primary-100 rounded-full">
+    <section className="container max-w-[85%] lg:max-w-[1080px] relative z-10 mt-[70px] mx-auto">
+      <div className="grid containermx-auto grid-cols-1 items-center justify-center sm:grid-cols-1 max-xl:max-w-[82%] max-lg:max-w-full  mx-auto md:grid-cols-2 lg:grid-cols-2 relative gap-6 xl:grid-cols-3">
+        <div className="relative p-4 py-6 max-xl:border border-secondary-50 box-shadow-card-3 rounded-3xl">
+          <div className="flex gap-4 box-shadow-card-3 items-center">
+            <span className="border-4 bg-gradient-to-b from-primary-300 to-primary-400 border-primary-100 rounded-full">
               <Image
-                className="max-sm:w-[30px] max-sm:h-[30px] w-[36px] h-[36px]"
+                className="max-sm:w-[30px] max-sm:h-[30px] p-[6px] w-[36px] h-[36px]"
                 src={registration}
                 alt="registration-svg"
               />
@@ -28,7 +28,7 @@ export default function Steps() {
           <div className="flex gap-4  items-center">
             <span className="border-4 border-primary-100 rounded-full">
               <Image
-                className="max-sm:w-[30px] max-sm:h-[30px] w-[36px] h-[36px]"
+                className="max-sm:w-[30px] bg-gradient-to-b from-primary-300 to-primary-400 rounded-full max-sm:h-[30px] p-[6px] w-[36px] h-[36px]"
                 src={work}
                 alt="work-svg"
               />
@@ -43,9 +43,9 @@ export default function Steps() {
         </div>
         <div className="p-6   group cursor-pointer hover:translate-y-[-4px] duration-300 transition-all border border-secondary-50 box-shadow-card-2 rounded-3xl">
           <div className="flex gap-4 items-center">
-            <span className="border-4 border-[#b7400048] rounded-full">
+            <span className="border-4 border-[#ffb18776] rounded-full">
               <Image
-                className="max-sm:w-[30px] max-sm:h-[30px] w-[36px] h-[36px]"
+                className="max-sm:w-[30px] max-sm:h-[30px] w-[36px] h-[36px] bg-gradient-to-b from-[#ff9a64] to-[#fd8341] rounded-full p-[6px]"
                 src={rocket}
                 alt="rocket-svg"
               />

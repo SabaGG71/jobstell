@@ -10,6 +10,14 @@
   background-color: #a354ff;
   color: #fff;
 }
+.box-shadow-orange {
+  box-shadow: rgba(255, 255, 255, 0.28) 4px 4px 18px 0px inset,
+    #fd834169 0px 0.48175px 2.40875px -0.833333px,
+    #fd834169 0px 1.83083px 9.15413px -1.66667px, #fd834169 0px 8px 40px -2.5px,
+    #fd834169 0px -0.48175px 2.40875px -0.833333px,
+    #fd834169 0px -1.83083px 9.15413px -1.66667px,
+    #fd834169 0px -8px 40px -2.5px;
+}
 .box-shadow {
   box-shadow: rgba(255, 255, 255, 0.28) 4px 4px 18px 0px inset,
     #a054f735 0px 0.48175px 2.40875px -0.833333px,
@@ -17,6 +25,9 @@
     #a054f735 0px -0.48175px 2.40875px -0.833333px,
     #a054f735 0px -1.83083px 9.15413px -1.66667px,
     #a054f735 0px -8px 40px -2.5px;
+}
+.boxys {
+  box-shadow: 0 0 0 5px #fff, 0 17px 24px #b2b2b21f;
 }
 .box-shadow-mobile {
   box-shadow: rgba(255, 255, 255, 0.28) 4px 4px 18px 0px inset,
@@ -40,6 +51,76 @@
     mask-image: linear-gradient(to bottom, #03040a, #03040a 65%, transparent);
   }
 }
+.masky-3 {
+  mask-image: linear-gradient(to bottom, #03040a, #03040a 45%, transparent);
+}
+@media (max-width: 1280px) {
+  .masky-3 {
+    mask-image: linear-gradient(
+      to top,
+      transparent,
+      #03040a 40%,
+      #03040a 100%,
+      transparent
+    );
+  }
+}
+/* .lines {
+  flex: none;
+  height: 120px;
+  left: 0;
+  overflow: visible;
+  position: absolute;
+  top: 0;
+  width: 4px;
+  z-index: 1;
+}
+.line-top {
+  width: 4.5px;
+  height: 50px;
+  background-color: var(--token-9acadeee-96ba-4371-9ae7-dac80f02f1f6, #c894ff);
+  border-radius: 2px;
+  opacity: 1;
+}
+.line-black {
+  background: linear-gradient(
+    180deg,
+    var(--token-9acadeee-96ba-4371-9ae7-dac80f02f1f6, #d6aeff) 0%,
+    rgba(171, 171, 171, 0.07) 100%
+  );
+  opacity: 0.9;
+  width: 5px;
+  z-index: -1;
+  height: 40px;
+}
+.line {
+  width: 2px;
+  height: 150px;
+  background: linear-gradient(
+    180deg,
+    var(#790ef5, rgb(254, 106, 46)) 0%,
+    #790ef5 100%
+  );
+  opacity: 0.5;
+}
+.line-2 {
+  width: 4.5px;
+  height: 50px;
+  background-color: var(--token-9acadeee-96ba-4371-9ae7-dac80f02f1f6, #e2e2e2);
+  border-radius: 2px;
+  opacity: 1;
+}
+.line-2-bottom {
+  background: linear-gradient(
+    180deg,
+    var(--token-9acadeee-96ba-4371-9ae7-dac80f02f1f6, #e2e2e2b0) 0%,
+    rgba(171, 171, 171, 0.07) 100%
+  );
+  opacity: 0.9;
+  width: 5px;
+  z-index: -1;
+  height: 40px;
+} */
 .masky-girl {
   mask-image: linear-gradient(
     to bottom,
@@ -120,7 +201,7 @@ button {
   box-shadow: rgba(50, 50, 93, 0.064) 0px 50px 100px -20px,
     rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
 }
-@media (max-width: 1124px) {
+@media (max-width: 1280px) {
   .box-shadow-card-3 {
     box-shadow: rgba(50, 50, 93, 0.064) 0px 50px 100px -20px,
       rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;

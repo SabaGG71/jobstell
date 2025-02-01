@@ -11,10 +11,10 @@ export default function HowItWorks() {
     <>
       <Steps />
 
-      <section className="mb-20 relative z-[0] mt-[-65px] md:mb-[300px]">
+      <section className="mb-20 relative z-[0] mt-[-65px]">
         <div className="max-w-[1080px] overflow-hidden max-xl:max-w-[80%] w-full masky-2 mx-auto relative xl:px-6">
           <div
-            className="absolute inset-0 z-0 max-sm:h-[350px] h-[450px]"
+            className="absolute inset-0 z-0 masky-3 max-sm:h-[350px] h-[450px]"
             style={{
               minHeight: "350px",
               overflow: "hidden",
