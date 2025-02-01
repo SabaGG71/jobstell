@@ -96,78 +96,80 @@ export default function FeaturesSection() {
               <SparklesCore />
             </div>
             <Image
-              className="w-[50px] masky-2"
+              className="w-[50px] max-sm:w-[35px] masky-2"
               src={logoMock}
               alt="logoMock-svg"
             />
             <div className="flex gap-4">
-              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-50 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
-              <h3 className="text-[30px] font-[600] text-white  mt-4">
+              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-50 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
+              <h3 className="text-[30px] max-sm:text-[24px] font-[600] text-white  mt-4">
                 Jobstell
               </h3>
 
-              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-50 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
+              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-50 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
             </div>
-            <p className="text-white/90 ">Your Interview Success Portal!</p>
+            <p className="text-white/90 max-sm:text-sm max-sm:mt-1">
+              Your Interview Success Portal!
+            </p>
 
             <div>
-              <div className="grid max-xl:pb-8 mt-5 max-xl:grid-cols-4 max-sm:grid-cols-1 max-lg:grid-cols-2 grid-cols-2 gap-4">
+              <div className="grid max-xl:pb-8 mt-5 max-xl:grid-cols-4 max-sm:grid-cols-2 max-lg:grid-cols-2 grid-cols-2 gap-4">
                 <div className="feature-1 hover:-translate-y-[3px] duration-300 transition-all cursor-pointer relative">
                   <Image
-                    className="w-[150px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
+                    className="w-[150px] max-sm:w-[110px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
                     src={featureBg}
                     alt="feature-bg-svg"
                   />
                   <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col justify-center text-center items-center">
-                    <h4 className="text-secondary-900 text-[24px] font-[700] mt-7">
+                    <h4 className="text-secondary-900 max-sm:text-[20px] text-[24px] max-sm:mt-[22px] font-[700] mt-7">
                       20+
                     </h4>
-                    <p className="text-secondary-600 mt-[-1px] text-[15px]">
-                      Questions
+                    <p className="text-secondary-600 sm:w-[150px] mt-[-1px] max-sm:mt-[-4px] text-[15px] max-sm:text-[12px]   max-sm:w-[100px]">
+                      questions
                     </p>
                   </div>
                 </div>
                 <div className="feature-2 hover:-translate-y-[3px] duration-300 transition-all cursor-pointer relative">
                   <Image
-                    className="w-[150px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
+                    className="w-[150px] max-sm:w-[110px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
                     src={clock}
                     alt="clock-bg-svg"
                   />
                   <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col justify-center text-center items-center">
-                    <h4 className="text-secondary-900 text-[24px] font-[700] mt-7">
+                    <h4 className="text-secondary-900 max-sm:text-[20px] text-[24px] max-sm:mt-[22px] font-[700] mt-7">
                       10+
                     </h4>
-                    <p className="text-secondary-600 w-[150px] mt-[-1px] text-[15px]">
+                    <p className="text-secondary-600 sm:w-[150px] mt-[-1px] max-sm:mt-[-4px] text-[15px] max-sm:text-[12px]   max-sm:w-[100px]">
                       minute roleplay
                     </p>
                   </div>
                 </div>
                 <div className="feature-3 relative hover:-translate-y-[3px] duration-300 transition-all cursor-pointer">
                   <Image
-                    className="w-[150px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
+                    className="w-[150px] max-sm:w-[110px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
                     src={featureBag}
                     alt="feature-bg-svg"
                   />
                   <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col justify-center text-center items-center">
-                    <h4 className="text-secondary-900 text-[24px] font-[700] mt-7">
+                    <h4 className="text-secondary-900 max-sm:text-[20px] text-[24px] max-sm:mt-[22px] font-[700] mt-7">
                       50+
                     </h4>
-                    <p className="text-secondary-600 mt-[-1px] text-[15px]">
+                    <p className="text-secondary-600 sm:w-[150px] mt-[-1px] max-sm:mt-[-4px] text-[15px] max-sm:text-[12px]   max-sm:w-[100px]">
                       professions
                     </p>
                   </div>
                 </div>
                 <div className="feature-4 hover:-translate-y-[3px] duration-300 transition-all cursor-pointer relative">
                   <Image
-                    className="w-[150px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
+                    className="w-[150px] max-sm:w-[110px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
                     src={aiCheck}
                     alt="aiCheck-bg-svg"
                   />
                   <div className="flex absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex-col justify-center text-center items-center">
-                    <h4 className="text-secondary-900 text-[24px] font-[700] mt-7">
+                    <h4 className="text-secondary-900 max-sm:text-[20px] text-[24px] max-sm:mt-[22px] font-[700] mt-7">
                       5+
                     </h4>
-                    <p className="text-secondary-600 mt-[-1px] text-[15px]">
+                    <p className="text-secondary-600 sm:w-[150px] mt-[-1px] max-sm:mt-[-4px] text-[15px] max-sm:text-[12px]   max-sm:w-[100px]">
                       AI models
                     </p>
                   </div>

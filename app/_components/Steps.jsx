@@ -5,7 +5,7 @@ import rocket from "../../public/racket.svg";
 
 export default function Steps() {
   return (
-    <section className="container max-w-[85%] lg:max-w-[1080px] relative z-10 mt-[70px] mx-auto">
+    <section className="container max-w-[85%] max-xl:mb-6 lg:max-w-[1080px] relative z-10 mt-[70px] mx-auto">
       <div className="grid containermx-auto grid-cols-1 items-center justify-center sm:grid-cols-1 max-xl:max-w-[82%] max-lg:max-w-full  mx-auto md:grid-cols-2 lg:grid-cols-2 relative gap-6 xl:grid-cols-3">
         <div className="relative p-4 py-6 max-xl:border border-secondary-50 box-shadow-card-3 rounded-3xl">
           <div className="flex gap-4 box-shadow-card-3 items-center">
