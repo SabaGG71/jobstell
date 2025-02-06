@@ -1,15 +1,15 @@
 "use client";
-import { db } from "@/utils/db";
-import { UserAnswer } from "@/utils/schema";
+import { db } from "../../../../../utils/db";
+import { UserAnswer } from "../../../../../utils/schema";
 import { eq } from "drizzle-orm";
 import { use, useEffect, useState } from "react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+} from "../../../../../components/ui/collapsible";
 import { ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../../../../components/ui/button";
 import Link from "next/link";
 
 export default function page({ params }) {

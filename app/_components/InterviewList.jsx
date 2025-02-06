@@ -1,6 +1,6 @@
 "use client";
-import { db } from "@/utils/db";
-import { JobInterview } from "@/utils/schema";
+import { db } from "../../utils/db";
+import { JobInterview } from "../../utils/schema";
 import { useUser } from "@clerk/nextjs";
 import { desc, eq } from "drizzle-orm";
 import { useEffect, useState } from "react";

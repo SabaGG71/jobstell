@@ -1,12 +1,24 @@
+"use client";
+
 import Image from "next/image";
+import { memo, useMemo } from "react";
 import Noise from "./Noise";
 import post from "../../public/post.png";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import image from "../../public/recordWhite.svg";
 import morestar from "../../public/starmore.svg";
 import Steps from "./Steps";
 
-export default function HowItWorks() {
+function HowItWorks() {
+  // Memoize the inline style so it isn't re-created on each render
+  const noiseWrapperStyle = useMemo(
+    () => ({
+      minHeight: "350px",
+      overflow: "hidden",
+    }),
+    []
+  );
+
   return (
     <>
       <Steps />
@@ -15,10 +27,7 @@ export default function HowItWorks() {
         <div className="max-w-[1080px] overflow-hidden max-xl:max-w-[80%] w-full masky-2 mx-auto relative xl:px-6">
           <div
             className="absolute inset-0 z-0 masky-3 max-sm:h-[350px] h-[450px]"
-            style={{
-              minHeight: "350px",
-              overflow: "hidden",
-            }}
+            style={noiseWrapperStyle}
           >
             <Noise
               patternSize={500}
@@ -29,10 +38,10 @@ export default function HowItWorks() {
             />
           </div>
 
-          <div className="relative grid grid-cols-1 xl:grid-cols-2  justify-center  items-center w-full z-10 min-h-[400px] py-10 md:py-16">
+          <div className="relative grid grid-cols-1 xl:grid-cols-2 justify-center items-center w-full z-10 min-h-[400px] py-10 md:py-16">
             <div className="flex max-xl:flex max-xl:flex-col justify-center w-full items-center">
               <Image
-                className="masky-girl max-md:bottom-[-104px] max-sm:bottom-[-72px] relative bottom-[-48px] max-sm:w-[250px] max-sm:h-[250px]  w-[280px] sm:w-[320px] md:w-[350px] h-auto md:h-[350px] object-cover p-3"
+                className="masky-girl max-md:bottom-[-104px] max-sm:bottom-[-72px] relative bottom-[-48px] max-sm:w-[250px] max-sm:h-[250px] w-[280px] sm:w-[320px] md:w-[350px] h-auto md:h-[350px] object-cover p-3"
                 src={post}
                 alt="post-image"
                 priority
@@ -50,7 +59,7 @@ export default function HowItWorks() {
                 interview!
               </p>
               <div className="flex mt-8 items-center gap-2">
-                <Button className="max-md:h-[37px] max-md:px-4 max-md:text-sm  bg-primary-500 hover:bg-primary-900 text-white rounded-full font-[400] px-5 h-[40px]">
+                <Button className="max-md:h-[37px] max-md:px-4 max-md:text-sm bg-primary-500 hover:bg-primary-900 text-white rounded-full font-[400] px-5 h-[40px]">
                   <Image
                     className="max-sm:w-[17px] max-md:w-[19px] max-md:h-[19px] max-sm:h-[17px]"
                     src={image}
@@ -58,7 +67,7 @@ export default function HowItWorks() {
                   />
                   Watch Video
                 </Button>
-                <button className="flex max-md:py-[8px] max-md:px-4 items-center gap-[9px] max-md:text-sm py-[8px] bg-secondary-700 box-shadow-black text-white hover:bg-black  transition-all duration-300 hover:translate-y-[-3px]  px-[20px] rounded-full font-[400] text-[16px] max-md:text-[15px]">
+                <button className="flex max-md:py-[8px] max-md:px-4 items-center gap-[9px] max-md:text-sm py-[8px] bg-secondary-700 box-shadow-black text-white hover:bg-black transition-all duration-300 hover:translate-y-[-3px] px-[20px] rounded-full font-[400] text-[16px] max-md:text-[15px]">
                   <Image
                     className="max-sm:w-[17px] max-md:w-[19px] max-md:h-[19px] max-sm:h-[17px]"
                     src={morestar}
@@ -74,3 +83,5 @@ export default function HowItWorks() {
     </>
   );
 }
+
+export default memo(HowItWorks);

@@ -266,6 +266,7 @@ button {
 .shadow-boxy {
   box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 14px 0px;
 }
+
 @layer base {
   :root {
     --background: 0 0% 100%;

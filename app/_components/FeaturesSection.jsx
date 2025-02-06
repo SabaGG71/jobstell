@@ -11,17 +11,16 @@ import featureBg from "../../public/feature-frame.svg";
 import clock from "../../public/clock-feature.svg";
 import featureBag from "../../public/feature-bag.svg";
 import aiCheck from "../../public/ai-check.svg";
-import { SparklesCore } from "./Sparkles";
 
 export default function FeaturesSection() {
   return (
-    <section className="container mt-[140px] mb-[300px]">
+    <section className="container mt-[140px]">
       <div>
         <div className="flex text-[17px] mb-6 text-secondary-600 text-center justify-center items-center">
           <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_80%,white_20%,transparent)]" />
-          <p className="border flex gap-2 items-center border-secondary-200 max-md:text-[15px] px-4 py-1 rounded-full">
+          <p className="border flex gap-2 items-center border-secondary-200 text-[15px] px-4 py-1 rounded-full">
             <Image
-              className="w-[16px] h-[16px] max-sm:w-[15px] max-sm:h-[15px]"
+              className="w-[15px] h-[15px]"
               src={energy}
               alt="energy-svg"
             />
@@ -91,22 +90,20 @@ export default function FeaturesSection() {
               </p>
             </div>
           </div>
-          <div className="bg-gradient-to-b duration-300 overflow-hidden scale-110 mx-6 border border-primary-100 flex flex-col items-center pt-6 max-xl:my-12 shadow-box from-primary-400  to-primary-50 rounded-3xl">
-            <div className="absolute top-0 z-[-1]">
-              <SparklesCore />
-            </div>
+          <div className="bg-gradient-to-b duration-300 overflow-hidden scale-110 mx-6 flex flex-col items-center pt-6 max-xl:my-12 shadow-box from-primary-400  to-primary-100 rounded-3xl">
+            <div className="absolute top-0 z-[-1]"></div>
             <Image
-              className="w-[50px] max-sm:w-[35px] masky-2"
+              className="w-[45px] max-sm:w-[35px] masky-2"
               src={logoMock}
               alt="logoMock-svg"
             />
             <div className="flex gap-4">
-              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-50 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
+              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-200 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
               <h3 className="text-[30px] max-sm:text-[24px] font-[600] text-white  mt-4">
                 Jobstell
               </h3>
 
-              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-50 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
+              <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-200 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
             </div>
             <p className="text-white/90 max-sm:text-sm max-sm:mt-1">
               Your Interview Success Portal!

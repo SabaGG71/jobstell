@@ -1,7 +1,7 @@
 "use client";
-import { Button } from "@/components/ui/button";
-import { db } from "@/utils/db";
-import { USER_TABLE } from "@/utils/schema";
+import { Button } from "../../../components/ui/button";
+import { db } from "../../../utils/db";
+import { USER_TABLE } from "../../../utils/schema";
 import { useUser } from "@clerk/clerk-react";
 import { eq } from "drizzle-orm";
 import Link from "next/link";

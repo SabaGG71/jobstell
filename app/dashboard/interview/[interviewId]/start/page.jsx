@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import QuestionsSection from "@/app/_components/QuestionsSection";
-import RecordAnswerSection from "@/app/_components/RecordAnswerSection";
-import { Button } from "@/components/ui/button";
-import { db } from "@/utils/db";
-import { JobInterview } from "@/utils/schema";
+import QuestionsSection from "../../../../../app/_components/QuestionsSection";
+import RecordAnswerSection from "../../../../_components/RecordAnswerSection";
+import { Button } from "../../../../../components/ui/button";
+import { db } from "../../../../../utils/db";
+import { JobInterview } from "../../../../../utils/schema";
 import { eq } from "drizzle-orm";
 
 export default function Page({ params }) {

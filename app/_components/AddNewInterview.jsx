@@ -5,21 +5,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+} from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
+import { Textarea } from "../../components/ui/textarea";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { chatSession } from "@/utils/GeminiAIModal";
+} from "../../components/ui/select";
+import { Input } from "../../components/ui/input";
+import { chatSession } from "../../utils/GeminiAIModal";
 import { LoaderCircle } from "lucide-react";
-import { db } from "@/utils/db";
-import { JobInterview, UserAnswer } from "@/utils/schema";
+import { db } from "../../utils/db";
+import { JobInterview, UserAnswer } from "../../utils/schema";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/clerk-react";
 import moment from "moment/moment";
@@ -41,7 +41,7 @@ export default function AddNewInterview() {
     e.preventDefault();
     console.log(jobPostion, jobDesc, jobExperience);
 
-    const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Details: Job Position: ${jobPostion}  Job Description: ${jobDesc}, Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. Questions should reflect the difficulty level appropriate for someone with one year of experience.`;
+    const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, senior level, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Details: Job Position: ${jobPostion}  Job Description: ${jobDesc}, Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. Questions should reflect the difficulty level appropriate for someone with one year of experience.`;
 
     try {
       const result = await chatSession.sendMessage(inputPrompt);

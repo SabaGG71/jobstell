@@ -6,14 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useUser, useClerk } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import callWhite from "../../public/call-white.svg";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from "../../components/ui/popover";
 import logo from "../../public/logo.svg";
 import contactSVG from "../../public/contact-svg.svg";
 import signIn from "../../public/sign-in.svg";
@@ -249,7 +248,7 @@ export default function Header() {
                           </span>
                           <Image
                             src={down}
-                            className="w-[10px] max-xl:ml-[3px] ml-[4px] h-[10px] opacity-80"
+                            className="w-[17px] max-xl:ml-[3px] ml-[4px] h-[17px] opacity-80"
                             alt="down-arrow"
                             priority
                           />

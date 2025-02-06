@@ -2,13 +2,13 @@
 import Webcam from "react-webcam";
 import camera from "../../public/camera.png";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { Mic } from "lucide-react";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { toast } from "sonner";
-import { chatSession } from "@/utils/GeminiAIModal";
-import { db } from "@/utils/db";
-import { UserAnswer } from "@/utils/schema";
+import { chatSession } from "../../utils/GeminiAIModal";
+import { db } from "../../utils/db";
+import { UserAnswer } from "../../utils/schema";
 import { useUser } from "@clerk/clerk-react";
 import moment from "moment";
 import { eq, and } from "drizzle-orm";
