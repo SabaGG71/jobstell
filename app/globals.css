@@ -207,23 +207,7 @@ button {
       rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
   }
 }
-@keyframes scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-50%));
-  }
-}
 
-@keyframes scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-50%));
-  }
-}
 @keyframes scroll {
   0% {
     transform: translateX(0);
