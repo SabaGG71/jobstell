@@ -21,7 +21,7 @@ export default function RecordAnswerSection({
 }) {
   const [userAnswer, setUserAnswer] = useState("");
   const { user } = useUser();
-  const [loading, isLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [deviceSupported, setDeviceSupported] = useState(true);
   const [retryCount, setRetryCount] = useState(0);
@@ -36,10 +36,10 @@ export default function RecordAnswerSection({
       mockInterviewQuestion?.interview_questions ||
       [];
 
+  // Check device support on mount and clean up media stream on unmount.
   useEffect(() => {
     checkDeviceSupport();
     return () => {
-      // Cleanup function to ensure streams are properly closed
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
       }
@@ -53,8 +53,8 @@ export default function RecordAnswerSection({
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true,
-          sampleRate: 44100, // Standard sample rate that works well across devices
-          channelCount: 1, // Mono recording for better compatibility
+          sampleRate: 44100,
+          channelCount: 1,
         },
       };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -78,19 +78,15 @@ export default function RecordAnswerSection({
       "audio/mp4",
       "audio/wav",
     ];
-
-    // Prefer more compatible formats for Android
     if (isAndroid) {
       types.unshift("audio/webm;codecs=opus");
       types.unshift("audio/ogg;codecs=opus");
     }
-
     for (const type of types) {
       if (MediaRecorder.isTypeSupported(type)) {
         return type;
       }
     }
-
     return "audio/webm"; // Fallback format
   };
 
@@ -118,7 +114,7 @@ export default function RecordAnswerSection({
 
   const startRecording = async () => {
     try {
-      // Enhanced audio constraints for better mobile compatibility
+      // Enhanced audio constraints for better compatibility.
       const constraints = {
         audio: {
           echoCancellation: true,
@@ -137,7 +133,7 @@ export default function RecordAnswerSection({
       const mimeType = getSupportedMimeType();
       const options = {
         mimeType,
-        audioBitsPerSecond: 128000, // Consistent bitrate across devices
+        audioBitsPerSecond: 128000,
       };
 
       const mediaRecorder = new MediaRecorder(stream, options);
@@ -152,15 +148,10 @@ export default function RecordAnswerSection({
 
       mediaRecorder.onstop = async () => {
         try {
-          const audioBlob = new Blob(chunksRef.current, {
-            type: mimeType,
-          });
-
-          // Ensure the blob is valid
+          const audioBlob = new Blob(chunksRef.current, { type: mimeType });
           if (audioBlob.size === 0) {
             throw new Error("No audio data recorded");
           }
-
           const formData = new FormData();
           formData.append(
             "file",
@@ -168,19 +159,20 @@ export default function RecordAnswerSection({
             `audio.${mimeType.split(";")[0].split("/")[1]}`
           );
 
-          isLoading(true);
+          setLoading(true);
           let transcriptionSuccess = false;
-          let retryAttempt = 0;
-
-          while (!transcriptionSuccess && retryAttempt < 3) {
+          // Use a for-loop for retries.
+          for (
+            let attempt = 0;
+            attempt < 3 && !transcriptionSuccess;
+            attempt++
+          ) {
             try {
               const response = await fetch("/api/transcribe", {
                 method: "POST",
                 body: formData,
               });
-
               const data = await handleTranscriptionResponse(response);
-
               if (data.transcription) {
                 transcriptionSuccess = true;
                 setUserAnswer(data.transcription);
@@ -188,13 +180,11 @@ export default function RecordAnswerSection({
               }
             } catch (error) {
               if (error.message === "RETRY") {
-                retryAttempt++;
                 continue;
               }
               throw error;
             }
           }
-
           if (!transcriptionSuccess) {
             throw new Error("Failed to transcribe after multiple attempts");
           }
@@ -202,7 +192,7 @@ export default function RecordAnswerSection({
           console.error("Recording processing error:", error);
           toast.error(error.message || "Failed to transcribe audio");
         } finally {
-          isLoading(false);
+          setLoading(false);
         }
       };
 
@@ -235,12 +225,8 @@ export default function RecordAnswerSection({
       try {
         mediaRecorderRef.current.stop();
         setIsRecording(false);
-
-        // Properly cleanup the stream
         if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => {
-            track.stop();
-          });
+          streamRef.current.getTracks().forEach((track) => track.stop());
           streamRef.current = null;
         }
       } catch (error) {
@@ -263,21 +249,20 @@ export default function RecordAnswerSection({
         throw new Error("Question not found");
       }
 
-      const result =
-        await chatSession.sendMessage(`Analyze the following input: Question: ${currentQuestion}
-      User Answer: ${transcribedText}
-      Provide a JSON response with exactly these three fields:
-      {
-        "rating": (a number between 1-10),
-        "feedback": (detailed analysis of the answer),
-        "study-materials": (relevant resources for improvement)
-      }`);
-
+      const result = await chatSession.sendMessage(
+        `Analyze the following input: Question: ${currentQuestion}
+User Answer: ${transcribedText}
+Provide a JSON response with exactly these three fields:
+{
+  "rating": (a number between 1-10),
+  "feedback": (detailed analysis of the answer),
+  "study-materials": (relevant resources for improvement)
+}`
+      );
       const responseText = result.response.text();
       const jsonStartIndex = responseText.indexOf("{");
       const jsonEndIndex = responseText.lastIndexOf("}");
       const jsonStr = responseText.substring(jsonStartIndex, jsonEndIndex + 1);
-
       const jsonFeedbackResp = JSON.parse(jsonStr);
 
       try {

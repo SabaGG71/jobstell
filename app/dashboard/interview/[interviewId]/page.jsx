@@ -5,7 +5,7 @@ import { JobInterview } from "../../../../utils/schema";
 import { eq } from "drizzle-orm";
 import { Lightbulb, WebcamIcon } from "lucide-react";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useMemo } from "react";
 import Webcam from "react-webcam";
 
 export default function Page({ params }) {
@@ -16,36 +16,55 @@ export default function Page({ params }) {
   useEffect(() => {
     console.log(resolvedParams.interviewId);
     interviewDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const interviewDetails = async () => {
-    const result = await db
-      .select()
-      .from(JobInterview)
-      .where(eq(JobInterview.mockJobId, resolvedParams.interviewId));
-
-    setInterviewData(result[0]);
+    try {
+      const result = await db
+        .select()
+        .from(JobInterview)
+        .where(eq(JobInterview.mockJobId, resolvedParams.interviewId));
+      setInterviewData(result[0]);
+    } catch (error) {
+      console.error("Error fetching interview details: ", error);
+    }
   };
 
+  // Use aggressive video constraints to reduce processing load:
+  const videoConstraints = useMemo(
+    () => ({
+      width: { ideal: 320 },
+      height: { ideal: 240 },
+      facingMode: "user",
+      frameRate: { ideal: 10, max: 10 },
+    }),
+    []
+  );
+
   return (
-    <div className="my-10 max-w-[70%] mx-auto gap-5 grid grid-cols-1 md:grid-cols-2 justify-center ">
+    <div className="my-10 max-w-[70%] mx-auto gap-5 grid grid-cols-1 md:grid-cols-2 justify-center">
       <div>
         <h2 className="font-bold text-2xl">Let&apos;s Get Started</h2>
         {webCamEnabled ? (
           <Webcam
+            audio={true}
+            videoConstraints={videoConstraints}
             mirrored={true}
-            onUserMedia={() => setWebCamEnabled(true)}
-            onUserMediaError={() => setWebCamEnabled(false)}
-            style={{ height: 400, width: 400 }}
+            style={{
+              height: 400, // display size can remain larger,
+              width: 400, // but the captured stream is lower-res
+              objectFit: "cover",
+            }}
           />
         ) : (
           <>
-            <WebcamIcon className="h-72 w-full p-20 rouned-lg border bg-secondary-100" />
+            <WebcamIcon className="h-72 w-full p-20 rounded-lg border bg-secondary-100" />
             <Button
               className="mt-4 bg-primary-700"
               onClick={() => setWebCamEnabled(true)}
             >
-              Enable Camera & Microphone
+              Enable Camera &amp; Microphone
             </Button>
           </>
         )}

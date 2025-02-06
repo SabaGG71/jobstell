@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useState, useEffect, useMemo, useCallback } from "react";
+import { memo, useMemo, useCallback, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
@@ -20,7 +20,7 @@ import logout from "../../public/logout.svg";
 import userSVG from "../../public/userSvg.svg";
 import down from "../../public/downArrow.svg";
 
-// Pre-define navigation links outside the component
+// Pre-define navigation links outside the component.
 const navigationLinks = [
   { href: "/dashboard", label: "Dashboard", desktopKey: "desktop-dashboard" },
   {
@@ -48,18 +48,11 @@ const LoadingSkeleton = () => (
 );
 
 function Header() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const { isSignedIn, user } = useUser();
+  // Always call hooks at the top level.
+  const { isSignedIn, user, isLoaded } = useUser();
   const { signOut } = useClerk();
 
-  // A very short delay to ensure Clerk is ready; adjust if needed.
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 50);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Memoize display name so it doesn't recalc on every render.
+  // Memoize display name so it doesn't re-calc on every render.
   const displayName = useMemo(() => {
     if (!user) return "User";
     if (user.fullName) return user.fullName;
@@ -84,19 +77,28 @@ function Header() {
     return "U";
   }, [user]);
 
+  // Manage mobile menu state using useState.
+  const [menuOpen, setMenuOpen] = useState(false);
+
   // Toggle menu handler.
-  const toggleMenu = useCallback(() => setIsOpen((prev) => !prev), []);
+  const toggleMenu = useCallback(() => {
+    setMenuOpen((prev) => !prev);
+  }, []);
 
   // Handler to close mobile menu.
-  const closeMobileMenu = useCallback(() => setIsOpen(false), []);
+  const closeMobileMenu = useCallback(() => {
+    setMenuOpen(false);
+  }, []);
 
   // Handler for mobile sign-out.
   const handleMobileSignOut = useCallback(() => {
-    setIsOpen(false);
+    closeMobileMenu();
     signOut();
-  }, [signOut]);
+  }, [closeMobileMenu, signOut]);
 
-  if (isLoading) {
+  // Now conditionally render the loading state,
+  // but all hooks have already been called.
+  if (!isLoaded) {
     return <LoadingSkeleton />;
   }
 
@@ -104,7 +106,7 @@ function Header() {
     <header
       className={twMerge(
         "py-[12px] bg-white/65 backdrop-blur px-4 fixed w-full top-0 z-50 transition-all duration-300",
-        isOpen ? "border-none" : "border-b border-[#adadad2c]"
+        menuOpen ? "border-none" : "border-b border-[#adadad2c]"
       )}
     >
       <div className="container">
@@ -191,7 +193,7 @@ function Header() {
                       y2="6"
                       className={twMerge(
                         "origin-left transition",
-                        isOpen && "rotate-45 -translate-y-1"
+                        menuOpen && "rotate-45 -translate-y-1"
                       )}
                     />
                     <line
@@ -199,7 +201,7 @@ function Header() {
                       y1="12"
                       x2="21"
                       y2="12"
-                      className={twMerge("transition", isOpen && "opacity-0")}
+                      className={twMerge("transition", menuOpen && "opacity-0")}
                     />
                     <line
                       x1="3"
@@ -208,7 +210,7 @@ function Header() {
                       y2="18"
                       className={twMerge(
                         "origin-left transition",
-                        isOpen && "-rotate-45 translate-y-1"
+                        menuOpen && "-rotate-45 translate-y-1"
                       )}
                     />
                   </svg>
@@ -222,7 +224,7 @@ function Header() {
                   className={twMerge(
                     isSignedIn
                       ? "flex box-shadow-black bg-gradient-to-b from-primary-400 to-primary-500 items-center gap-[11px] hover:bg-primary-600 pr-5 text-white mr-2 py-[7px] px-4 rounded-full font-[400] text-[15px] cursor-pointer duration-200 transition-all"
-                      : "flex box-shadow-black  border border-secondary-300 items-center gap-[11px] pr-5 hover:bg-secondary-50 text-secondary-900 py-[5px] px-4 rounded-full font-[400] text-[15px] cursor-pointer hover:translate-y-[-2px] duration-300 transition-all"
+                      : "flex box-shadow-black border border-secondary-300 items-center gap-[11px] pr-5 hover:bg-secondary-50 text-secondary-900 py-[5px] px-4 rounded-full font-[400] text-[15px] cursor-pointer hover:translate-y-[-2px] duration-300 transition-all"
                   )}
                 >
                   {isSignedIn ? (
@@ -299,8 +301,8 @@ function Header() {
                   <Link href="/sign-up">
                     <Button className="flex hover:translate-y-[-2px] duration-300 transition-all select-none items-center h-[34px] gap-2 bg-gradient-to-b from-primary-400 to-primary-500 box-shadow text-white px-[20px] rounded-full font-[400] text-[15px] ml-2">
                       <Image
-                        width={15}
-                        height={15}
+                        width={14}
+                        height={14}
                         src={signIn}
                         alt="sign-in-svg"
                         priority
@@ -315,7 +317,7 @@ function Header() {
 
           {/* Mobile Menu */}
           <AnimatePresence>
-            {isOpen && (
+            {menuOpen && (
               <motion.div
                 initial={{ height: 0 }}
                 animate={{ height: "auto" }}

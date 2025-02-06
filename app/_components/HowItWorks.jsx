@@ -3,14 +3,14 @@
 import Image from "next/image";
 import { memo, useMemo } from "react";
 import Noise from "./Noise";
-import post from "../../public/post.png";
+import post from "../../public/post.webp";
 import { Button } from "../../components/ui/button";
 import image from "../../public/recordWhite.svg";
 import morestar from "../../public/starmore.svg";
 import Steps from "./Steps";
 
 function HowItWorks() {
-  // Memoize the inline style so it isn't re-created on each render
+  // Memoize the inline style so it isn't re-created on each render.
   const noiseWrapperStyle = useMemo(
     () => ({
       minHeight: "350px",
@@ -25,6 +25,9 @@ function HowItWorks() {
 
       <section className="mb-20 relative z-[0] mt-[-65px]">
         <div className="max-w-[1080px] overflow-hidden max-xl:max-w-[80%] w-full masky-2 mx-auto relative xl:px-6">
+          {/* The Noise component is likely the main performance bottleneck.
+              If possible, optimize its internal drawing logic (e.g. by using
+              canvas with requestAnimationFrame and caching computed values). */}
           <div
             className="absolute inset-0 z-0 masky-3 max-sm:h-[350px] h-[450px]"
             style={noiseWrapperStyle}

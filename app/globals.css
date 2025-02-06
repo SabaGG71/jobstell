@@ -225,17 +225,20 @@ button {
   }
 }
 @keyframes scroll {
-  from {
+  0% {
     transform: translateX(0);
   }
-  to {
-    transform: translateX(calc(-50%)); /* Adjust for gap compensation */
+  100% {
+    transform: translateX(calc(-50%));
   }
 }
 
 .animate-scroll {
-  animation: scroll var(--animation-duration, 400s)
-    var(--animation-direction, forwards) linear infinite;
+  animation-name: scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-duration: var(--animation-duration, 220s);
+  animation-direction: var(--animation-direction, slow);
 }
 .line {
   background: linear-gradient(
