@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { db } from "@/utils/db";
-import { USER_TABLE } from "@/utils/schema";
+import { db } from "../../utils/db";
+import { USER_TABLE } from "../../utils/schema";
 import { eq, sql } from "drizzle-orm";
 import { Loader2 } from "lucide-react";
 
