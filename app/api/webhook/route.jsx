@@ -1,4 +1,4 @@
-import { USER_TABLE } from "../../utils/schema";
+import { USER_TABLE } from "../../../utils/schema";
 import Stripe from "stripe";
 
 export async function POST(req) {
