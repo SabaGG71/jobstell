@@ -260,10 +260,20 @@ Provide a JSON response with exactly these three fields:
 }`
       );
       const responseText = result.response.text();
-      const jsonStartIndex = responseText.indexOf("{");
-      const jsonEndIndex = responseText.lastIndexOf("}");
-      const jsonStr = responseText.substring(jsonStartIndex, jsonEndIndex + 1);
-      const jsonFeedbackResp = JSON.parse(jsonStr);
+
+      // Extract the JSON using a regex so extra text doesn't break parsing.
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error("Invalid JSON response from AI");
+      }
+      const jsonStr = jsonMatch[0];
+
+      let jsonFeedbackResp;
+      try {
+        jsonFeedbackResp = JSON.parse(jsonStr);
+      } catch (error) {
+        throw new Error("Error parsing JSON response.");
+      }
 
       try {
         await db

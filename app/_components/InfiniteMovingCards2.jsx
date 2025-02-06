@@ -32,7 +32,7 @@ export const InfiniteMovingCards2 = ({
     }
   }, [items]);
 
-  // Set CSS animation properties on the container
+  // Set CSS animation properties on the container.
   const updateAnimationProperties = useCallback(() => {
     if (containerRef.current) {
       const speedMap = {
@@ -60,6 +60,37 @@ export const InfiniteMovingCards2 = ({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [updateAnimationProperties, updateDuplications]);
+
+  // Monitor frame rate and refresh duplications if lag is detected.
+  useEffect(() => {
+    let rafId;
+    let lastFrameTimestamp = null;
+    let frameTimes = [];
+    const threshold = 60; // if average frame time > 60ms (~16.7 fps), consider it laggy
+
+    const monitorFrameRate = (timestamp) => {
+      if (lastFrameTimestamp !== null) {
+        const delta = timestamp - lastFrameTimestamp;
+        frameTimes.push(delta);
+        if (frameTimes.length >= 30) {
+          const avgFrameTime =
+            frameTimes.reduce((a, b) => a + b, 0) / frameTimes.length;
+          if (avgFrameTime > threshold) {
+            // Refresh the duplicated items if lag is detected.
+            updateDuplications();
+            frameTimes = [];
+          } else {
+            frameTimes = [];
+          }
+        }
+      }
+      lastFrameTimestamp = timestamp;
+      rafId = requestAnimationFrame(monitorFrameRate);
+    };
+
+    rafId = requestAnimationFrame(monitorFrameRate);
+    return () => cancelAnimationFrame(rafId);
+  }, [updateDuplications]);
 
   return (
     <div

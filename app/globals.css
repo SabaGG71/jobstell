@@ -229,17 +229,15 @@ button {
     transform: translateX(0);
   }
   100% {
-    transform: translateX(calc(-50%));
+    transform: translateX(-50%);
   }
 }
 
 .animate-scroll {
-  animation-name: scroll;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  animation-duration: var(--animation-duration, 220s);
-  animation-direction: var(--animation-direction, slow);
+  animation: scroll var(--animation-duration) linear infinite;
+  animation-direction: var(--animation-direction);
 }
+
 .line {
   background: linear-gradient(
     0deg,

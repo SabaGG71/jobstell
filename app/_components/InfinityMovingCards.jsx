@@ -3,6 +3,17 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { cn } from "../../utils/cn";
 
+// A simple debounce helper to limit function calls on resize.
+function debounce(func, wait) {
+  let timeout;
+  return function debounced(...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func(...args);
+    }, wait);
+  };
+}
+
 export const InfiniteMovingCards = ({
   items,
   direction = "center",
@@ -10,19 +21,19 @@ export const InfiniteMovingCards = ({
   className,
 }) => {
   const containerRef = useRef(null);
-  // State for the duplicated items
   const [duplicatedItems, setDuplicatedItems] = useState([]);
+  const lastFrameTimestampRef = useRef(null);
+  const frameTimesRef = useRef([]);
 
-  // Calculate and update the duplicated items based on container width.
+  // Calculate and update the duplicated items.
   const updateDuplications = useCallback(() => {
     if (containerRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
-      // Assume an approximate item width.
-      // You could improve this by measuring one rendered item if needed.
+      // Using an approximate item width; adjust if needed.
       const approxItemWidth = 60;
       const requiredCopies = Math.ceil(containerWidth / approxItemWidth) + 3;
 
-      // Create an array that duplicates the items as many times as needed.
+      // Build a new array duplicating the items.
       const newDuplicatedItems = [];
       for (let i = 0; i < requiredCopies; i++) {
         items.forEach((item) => {
@@ -34,9 +45,44 @@ export const InfiniteMovingCards = ({
   }, [items]);
 
   useEffect(() => {
+    // Call update once when the component mounts.
     updateDuplications();
-    window.addEventListener("resize", updateDuplications);
-    return () => window.removeEventListener("resize", updateDuplications);
+
+    // Debounce the update on window resize.
+    const debouncedUpdate = debounce(updateDuplications, 100);
+    window.addEventListener("resize", debouncedUpdate);
+    return () => {
+      window.removeEventListener("resize", debouncedUpdate);
+    };
+  }, [updateDuplications]);
+
+  // Monitor the frame rate and refresh the component if lag is detected.
+  useEffect(() => {
+    let rafId;
+    const monitorFrameRate = (timestamp) => {
+      if (lastFrameTimestampRef.current !== null) {
+        const delta = timestamp - lastFrameTimestampRef.current;
+        frameTimesRef.current.push(delta);
+
+        // When we have collected 30 frames, compute the average frame time.
+        if (frameTimesRef.current.length >= 30) {
+          const avgFrameTime =
+            frameTimesRef.current.reduce((a, b) => a + b, 0) /
+            frameTimesRef.current.length;
+          // If average frame time is greater than 60ms (~16.7 fps), refresh duplications.
+          if (avgFrameTime > 60) {
+            updateDuplications();
+            // Reset the frame time collection.
+            frameTimesRef.current = [];
+          }
+        }
+      }
+      lastFrameTimestampRef.current = timestamp;
+      rafId = requestAnimationFrame(monitorFrameRate);
+    };
+
+    rafId = requestAnimationFrame(monitorFrameRate);
+    return () => cancelAnimationFrame(rafId);
   }, [updateDuplications]);
 
   return (
@@ -46,24 +92,23 @@ export const InfiniteMovingCards = ({
         "relative z-20 w-full overflow-hidden xl:[mask-image:linear-gradient(to_right,transparent_0%,white_10%,white_90%,transparent_100%)]",
         className
       )}
-      // Set CSS variables for animation properties.
       style={{
         "--animation-duration": "200s",
         "--animation-direction": direction === "center" ? "normal" : "reverse",
       }}
     >
+      {/* Optional decorative overlay */}
       <div className="w-full absolute inset-0 pointer-events-none [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       <ul
         className={cn(
-          "flex w-max flex-nowrap animate-scroll", // the CSS animation is handled via keyframes
+          "flex w-max flex-nowrap animate-scroll", // the scrolling animation is defined via CSS keyframes
           pauseOnHover && "hover:[animation-play-state:paused]"
         )}
         style={{
           paddingLeft: 0,
           marginLeft: 0,
-          // Force GPU acceleration by indicating that transform will change and using translateZ(0)
           willChange: "transform",
-          transform: "translateZ(0)",
+          transform: "translate3d(0, 0, 0)",
         }}
       >
         {duplicatedItems.map((item, idx) => (
