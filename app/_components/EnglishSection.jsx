@@ -8,10 +8,10 @@ import voice from "../../public/voice.svg";
 import grammer from "../../public/grammer.svg";
 import user from "../../public/userr.svg";
 import energy2 from "../../public/energy2.svg";
-import { AccordionIcons } from "./AccardionIcons";
+import checkbox from "../../public/checkbox.svg";
+import bgAbsolute from "../../public/bgSvgAbsolute.svg";
 
 function EnglishSection() {
-  // Memoize the inline style so that it isn't re-created on every render.
   const noisesContainerStyle = useMemo(
     () => ({
       minHeight: "350px",
@@ -30,32 +30,40 @@ function EnglishSection() {
         </p>
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       </div>
-      <h3 className="text-center max-md:max-w-[90%] mx-auto justify-center items-center text-[34px] text-secondary-700 mb-[80px] max-md:mb-[60px] max-md:text-[24px]">
+      <h3 className="text-center max-sm:max-w-[90%] mx-auto justify-center items-center text-[34px] text-secondary-700 mb-[80px] max-sm:mb-[60px] max-sm:text-[24px]">
         AI Voice Assistant – Speak With <br />
         <span className="text-secondary-900 font-[600]"> Confidence</span>
       </h3>
 
-      <div className="max-w-[1080px] relative mx-auto max-xl:container grid grid-cols-1 lg:grid-cols-2">
-        <div>
-          <h3 className="text-[34px] max-w-[80%] font-[400] my-4 mb-6">
-            Advance Your Communication{" "}
-            <span className="font-[600] text-primary-500">Skills</span>
+      <div className="max-w-[1080px] max-lg:max-w-[90%] items-center relative mx-auto max-xl:container grid grid-cols-1 lg:grid-cols-2">
+        <div className="border relative bg-gradient-to-t from-primary-50 to-white max-lg:rounded-tr-3xl max-lg:rounded-br-3xl border-secondary-100 overflow-hidden rounded-tl-3xl rounded-bl-3xl max-lg:pl-9 py-4 pl-12 pt-[90px]">
+          <Image
+            className="absolute opacity-60 max-sm:right-[-54%] max-sm:top-[-45%] right-[-56%] max-md:right-[-50%] max-lg:right-[-25%] top-[-63%]"
+            src={bgAbsolute}
+            alt="bg-svg"
+          />
+          <span className="flex items-center gap-3 border border-secondary-100 box-shadow-black  text-secondary-600 font-[400] text-[15px] absolute left-0 top-[17%] max-sm:text-[14px] max-sm:py-[6px] py-[8px] px-5 rounded-tr-full rounded-br-full">
+            <Image
+              className="w-[19px] rounded-full h-[19px]"
+              src={checkbox}
+              alt="checkbox-svg"
+            />
+            Break Language Barriers
+          </span>
+          <h3 className="text-[34px] max-sm:text-[24px] max-sm:leading-[35px] text-secondary-700 max-lg:max-w-[60%] max-sm:max-w-[90%] max-w-[70%] font-[400] mt-12 max-sm:mt-9 leading-[45px] relative z-30 my-5 max-sm:my-4 mb-6">
+            Improve Your{" "}
+            <span className="font-[600] text-primary-500">Speech</span> &
+            Expression
           </h3>
-          <p className="text-[17px] max-w-[85%] text-secondary-500 mb-5 leading-7">
-            Practice real-world scenarios,{" "}
-            <span className="font-[600] text-secondary-900 relative">
-              refine your grammar{" "}
-            </span>
-            , and receive immediate feedback to improve your fluency and
-            communication.
+
+          <p className="text-[17px] max-sm:text-[15px] max-w-[80%] max-sm:max-w-[90%] max-lg:max-w-[70%] text-secondary-500 mb-12 max-sm:leading-6 leading-7">
+            Practice real-world scenarios, refine your grammar, and receive
+            immediate feedback to improve your fluency and communication.
           </p>
-          <div>
-            <AccordionIcons />
-          </div>
         </div>
         <div>
-          <div className="bg-gradient-to-b relative flex flex-col items-center justify-center gap-9 p-24 rounded-3xl from-primary-100 to-primary-300">
-            <div className="w-[1px] h-[330px] absolute top-0 bg-gradient-to-b from-white/10 to-white/80" />
+          <div className="bg-gradient-to-b max-xl:mt-4 relative flex flex-col items-center justify-center gap-9 max-sm:p-16 p-24 rounded-3xl from-primary-100 to-primary-300">
+            <div className="w-[1px] max-sm:h-[300px] h-[330px] absolute top-0 bg-gradient-to-b from-white/10 to-white/80" />
             <div
               className="absolute w-full rounded-3xl inset-0 z-0 masky-3 max-sm:h-[350px] h-[450px] border-none"
               style={noisesContainerStyle}
@@ -71,42 +79,50 @@ function EnglishSection() {
             <div className="text-center relative hover:rotate-[4deg] cursor-pointer duration-300 transition-all z-10 gap-2 bg-[#b470f0] box-shadow text-white p-[8px] px-4 rounded-full flex items-center">
               <span>
                 <Image
-                  className="w-[21px] h-[21px]"
+                  className="w-[21px] h-[21px] max-sm:w-[17px] max-sm:h-[17px]"
                   src={voice}
                   alt="voice-svg"
                 />
               </span>
-              <p className="text-[15px] font-[600]">Talk Like a Pro</p>
+              <p className="text-[15px] max-sm:text-sm font-[600]">
+                Talk Like a Pro
+              </p>
             </div>
             <div className="text-center hover:rotate-[-4deg] cursor-pointer duration-300 transition-all relative z-10 gap-3 bg-[#a35ee0] box-shadow text-white p-[8px] px-4 rounded-full flex items-center">
               <span>
                 <Image
-                  className="w-[19px] h-[19px]"
+                  className="w-[19px] h-[19px] max-sm:w-[17px] max-sm:h-[17px]"
                   src={grammer}
                   alt="grammer-svg"
                 />
               </span>
-              <p className="text-[15px] font-[600]">Refine Your Grammar</p>
+              <p className="text-[15px] max-sm:text-sm font-[600]">
+                Refine Your Grammar
+              </p>
             </div>
             <div className="text-center hover:rotate-[4deg] cursor-pointer duration-300 transition-all relative z-10 gap-3 bg-[#693696] box-shadow text-white p-2 px-4 rounded-full flex items-center">
               <span>
                 <Image
-                  className="w-[20px] h-[20px]"
+                  className="w-[20px] h-[20px] max-sm:w-[18px] max-sm:h-[18px]"
                   src={user}
                   alt="user-svg"
                 />
               </span>
-              <p className="text-[15px] font-[600]">Simulate HR Training</p>
+              <p className="text-[15px] max-sm:text-sm font-[600]">
+                Simulate HR Training
+              </p>
             </div>
-            <div className="text-center hover:rotate-[-4deg] cursor-pointer duration-300 transition-all relative z-10 gap-2 bg-[#3c2153] box-shadow text-white p-2 px-5 rounded-full flex items-center">
+            <div className="text-center hover:rotate-[-4deg] cursor-pointer duration-300 transition-all relative z-10 gap-2 bg-[#4a2868] box-shadow text-white p-2 px-5 rounded-full flex items-center">
               <span>
                 <Image
-                  className="w-[18px] h-[18px]"
+                  className="w-[18px] h-[18px] max-sm:w-[17px] max-sm:h-[17px]"
                   src={energy2}
                   alt="energy2-svg"
                 />
               </span>
-              <p className="text-[15px] font-[600]">Confidence Boosted</p>
+              <p className="text-[15px] max-sm:text-sm font-[600]">
+                Confidence Boosted
+              </p>
             </div>
           </div>
         </div>
