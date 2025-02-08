@@ -166,6 +166,37 @@
     rgb(0 0 0 / 0%) 100%
   );
 }
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50%));
+  }
+}
+
+.animate-scroll {
+  animation: scroll var(--animation-duration) var(--animation-direction) linear
+    infinite;
+}
+@media (min-width: 1280px) {
+  .job-type-mask-4 {
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      rgb(0, 0, 0) 20%,
+      rgb(0, 0, 0) 80%,
+      transparent
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      rgb(0, 0, 0) 20%,
+      rgb(0, 0, 0) 80%,
+      transparent
+    );
+  }
+}
 .bg-scroller {
   border-right: 8px solid #a354ff;
   border-radius: 15px;
