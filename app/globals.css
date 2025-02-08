@@ -166,19 +166,6 @@
     rgb(0 0 0 / 0%) 100%
   );
 }
-@keyframes scroll {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(calc(-50%));
-  }
-}
-
-.animate-scroll {
-  animation: scroll var(--animation-duration) var(--animation-direction) linear
-    infinite;
-}
 @media (min-width: 1280px) {
   .job-type-mask-4 {
     mask-image: linear-gradient(
