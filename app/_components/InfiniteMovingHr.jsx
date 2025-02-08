@@ -2,12 +2,30 @@
 
 import React from "react";
 import { InfiniteMovingHrs } from "../_components/InfiniteMovingHrs";
+import arrowRight from "../../public/arrowRight.svg";
+import Image from "next/image";
 
 export function InfiniteMovingHr() {
   return (
-    <div className="rounded-md max-w-full mb-[200px] flex flex-col antialiased  items-center justify-center relative overflow-hidden">
-      <InfiniteMovingHrs items={testimonials} direction="right" speed="slow" />
-    </div>
+    <>
+      <div className="rounded-md max-w-full flex flex-col antialiased  items-center justify-center relative overflow-hidden">
+        <InfiniteMovingHrs
+          items={testimonials}
+          direction="right"
+          speed="slow"
+        />
+      </div>
+      <div className="text-center justify-center flex items-center">
+        <button className="mt-6 mb-[120px] rounded-full text-secondary-800 box-shadow hover:-translate-y-[3px] text-[15px] font-[600] py-[11px] max-md:text-[14px] max-md:px-4 duration-300 transition-all hover:bg-primary-200 px-6 box-shadow-black flex gap-4 items-center bg-primary-100">
+          See All HR Experts
+          <Image
+            className="w-[18px] h-[18px]"
+            src={arrowRight}
+            alt="arrowRight-svg"
+          />
+        </button>
+      </div>
+    </>
   );
 }
 
