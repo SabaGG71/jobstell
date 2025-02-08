@@ -10,16 +10,25 @@ export async function POST(req) {
 
     const response = await fetch("https://jobstell-chatbot.onrender.com/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": process.env.JOBSTELL_CHATBOT_API_KEY, // Must be set correctly on your server
+      },
       body: JSON.stringify({
-        prompt,
+        prompt, // Ensure this is not undefined
         conversationHistory,
-        shouldGreet, // Pass the shouldGreet flag to the backend
+        shouldGreet,
       }),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to fetch from external API");
+      const errorData = await response.json();
+      console.error("Error response from external API:", errorData);
+      throw new Error(
+        `Failed to fetch from external API: ${
+          errorData.details || response.statusText
+        }`
+      );
     }
 
     const data = await response.json();
