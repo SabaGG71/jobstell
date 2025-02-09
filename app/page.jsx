@@ -4,6 +4,7 @@ import Header from "./_components/Header";
 import Chatbot from "./_components/Chatbot";
 import Hero from "./_components/Hero";
 import HrSection from "./_components/HrSection";
+import Pricing from "./_components/Pricing";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <FeaturesSection />
       <EnglishSection />
       <HrSection />
+      <Pricing />
       <Chatbot />
     </>
   );

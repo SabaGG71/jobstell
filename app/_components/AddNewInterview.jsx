@@ -19,12 +19,17 @@ import { Input } from "../../components/ui/input";
 import { chatSession } from "../../utils/GeminiAIModal";
 import { LoaderCircle } from "lucide-react";
 import { db } from "../../utils/db";
-import { JobInterview, UserAnswer } from "../../utils/schema";
+import { JobInterview } from "../../utils/schema";
 import { v4 as uuidv4 } from "uuid";
 import { useUser } from "@clerk/clerk-react";
 import moment from "moment/moment";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+
+// Configuration constants
+const MAX_RETRIES = 3;
+const TIMEOUT_DURATION = 30000;
+const INITIAL_BACKOFF_DELAY = 1000;
 
 export default function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -32,72 +37,113 @@ export default function AddNewInterview() {
   const [jobDesc, setJobDesc] = useState("");
   const [jobExperience, setJobExperience] = useState("");
   const [loading, setLoading] = useState(false);
-  const [jsonResponse, setJsonResponse] = useState();
+  const [error, setError] = useState("");
   const router = useRouter();
   const { user } = useUser();
 
+  // Helper function for delay with exponential backoff
+  const delay = (retryCount) =>
+    new Promise((resolve) =>
+      setTimeout(resolve, INITIAL_BACKOFF_DELAY * Math.pow(2, retryCount))
+    );
+
+  // Enhanced JSON parsing function with better error handling
+  const parseJsonResponse = (response) => {
+    try {
+      // Remove any markdown code block syntax and clean the string
+      let cleanedResponse = response.replace(/```json\s*|\s*```/g, "").trim();
+
+      // Try direct JSON parse first
+      try {
+        return JSON.parse(cleanedResponse);
+      } catch (e) {
+        // If direct parse fails, try more aggressive cleaning
+        cleanedResponse = cleanedResponse
+          .replace(/[\u201C\u201D\u2018\u2019]/g, '"') // Replace smart quotes
+          .replace(/\n/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        // Find the first { and last } to extract valid JSON
+        const startIdx = cleanedResponse.indexOf("{");
+        const endIdx = cleanedResponse.lastIndexOf("}") + 1;
+
+        if (startIdx === -1 || endIdx === 0) {
+          throw new Error("No valid JSON object found in response");
+        }
+
+        const jsonString = cleanedResponse.slice(startIdx, endIdx);
+        const parsed = JSON.parse(jsonString);
+
+        // Validate the expected structure
+        if (!Array.isArray(parsed) && typeof parsed !== "object") {
+          throw new Error("Parsed result is neither an array nor an object");
+        }
+
+        return parsed;
+      }
+    } catch (error) {
+      console.error("JSON Parsing Error:", error);
+      throw new Error(`Failed to parse AI response: ${error.message}`);
+    }
+  };
+
+  // Function to handle API calls with timeout
+  const fetchWithTimeout = async (promise) => {
+    let timeoutId;
+
+    const timeoutPromise = new Promise((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error("Request timed out after " + TIMEOUT_DURATION + "ms"));
+      }, TIMEOUT_DURATION);
+    });
+
+    try {
+      const result = await Promise.race([promise, timeoutPromise]);
+      clearTimeout(timeoutId);
+      return result;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      throw error;
+    }
+  };
+
+  // Function to make API call with retries
+  const makeApiCallWithRetries = async (apiCall) => {
+    for (let i = 0; i < MAX_RETRIES; i++) {
+      try {
+        return await fetchWithTimeout(apiCall());
+      } catch (error) {
+        if (i === MAX_RETRIES - 1) throw error;
+        await delay(i);
+        console.log(`Retry attempt ${i + 1} of ${MAX_RETRIES}`);
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
-    console.log(jobPostion, jobDesc, jobExperience);
+    setLoading(true);
+    setError("");
 
     const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
 
     try {
-      const result = await chatSession.sendMessage(inputPrompt);
-      let mockJsonResp = result.response.text();
+      // Make API call with retries
+      const result = await makeApiCallWithRetries(() =>
+        chatSession.sendMessage(inputPrompt)
+      );
 
-      // Advanced JSON parsing strategy
-      let parsedResponse;
-      try {
-        // Remove code block markers, whitespace, and clean up the response
-        let cleanedResponse = mockJsonResp
-          .replace(/```(json)?/g, "") // Remove code block markers
-          .replace(/\n/g, "") // Remove newlines
-          .replace(/\s+/g, " ") // Replace multiple whitespaces
-          .trim();
-
-        // Try multiple parsing strategies
-        const parseStrategies = [
-          () => JSON.parse(cleanedResponse),
-          () => {
-            // Extract JSON between first { and last }
-            const match = cleanedResponse.match(/\{.*\}/s);
-            return match ? JSON.parse(match[0]) : null;
-          },
-          () => {
-            // Remove any text before first { and after last }
-            const startIndex = cleanedResponse.indexOf("{");
-            const endIndex = cleanedResponse.lastIndexOf("}") + 1;
-            return JSON.parse(cleanedResponse.slice(startIndex, endIndex));
-          },
-        ];
-
-        for (const strategy of parseStrategies) {
-          try {
-            parsedResponse = strategy();
-            if (parsedResponse) break;
-          } catch (err) {
-            console.log("Parsing strategy failed:", err);
-            continue;
-          }
-        }
-
-        if (!parsedResponse) {
-          throw new Error("Could not parse JSON response");
-        }
-      } catch (parseError) {
-        console.error("Comprehensive JSON Parsing Error:", parseError);
-        console.log("Raw response:", mockJsonResp);
-        alert("Error generating interview questions. Please try again.");
-        setLoading(false);
-        return;
+      if (!result?.response) {
+        throw new Error("Invalid API response format");
       }
 
-      setJsonResponse(JSON.stringify(parsedResponse, null, 2));
+      const mockJsonResp = result.response.text();
+      const parsedResponse = parseJsonResponse(mockJsonResp);
 
-      if (parsedResponse) {
-        const resp = await db
+      // Insert into database with retries
+      const dbResponse = await makeApiCallWithRetries(() =>
+        db
           .insert(JobInterview)
           .values({
             mockJobId: uuidv4(),
@@ -108,23 +154,22 @@ export default function AddNewInterview() {
             createdBy: user?.primaryEmailAddress?.emailAddress,
             createdAt: moment().format("DD-MM-YYYY"),
           })
-          .returning({ mockJobId: JobInterview.mockJobId });
+          .returning({ mockJobId: JobInterview.mockJobId })
+      );
 
-        if (resp) {
-          setOpenDialog(false);
-          router.push("/dashboard/interview/" + resp[0]?.mockJobId);
-        }
-        console.log("Inserted ID: ", resp);
-      } else {
-        console.log("ERROR: No valid response");
-        alert("Error generating interview questions. Please try again.");
+      if (!dbResponse?.[0]?.mockJobId) {
+        throw new Error("Failed to create interview session");
       }
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert("An error occurred. Please try again.");
-    }
 
-    setLoading(false);
+      setOpenDialog(false);
+      router.push("/dashboard/interview/" + dbResponse[0].mockJobId);
+    } catch (error) {
+      console.error("Error:", error);
+      setError(error.message || "An unexpected error occurred");
+      alert(error.message || "An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -149,6 +194,10 @@ export default function AddNewInterview() {
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {error && (
+              <div className="text-red-500 bg-red-50 p-3 rounded">{error}</div>
+            )}
+
             <div>
               <p className="text-secondary-500">
                 Add Details About Your Job Position/Role, Job Description and
