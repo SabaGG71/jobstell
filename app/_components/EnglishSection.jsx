@@ -35,7 +35,7 @@ function EnglishSection() {
         <span className="text-secondary-900 font-[600]"> Confidence</span>
       </h3>
 
-      <div className="max-w-[1080px] max-lg:max-w-[80%] max-xl:max-w-[80%] items-center relative mx-auto max-xl:container grid grid-cols-1 xl:grid-cols-2">
+      <div className="max-w-[1080px] max-lg:max-w-[90%] max-xl:max-w-[80%] items-center relative mx-auto max-xl:container grid grid-cols-1 xl:grid-cols-2">
         <div className="border relative bg-gradient-to-t from-primary-50 to-white max-xl:rounded-tr-3xl max-xl:rounded-br-3xl border-secondary-100 overflow-hidden rounded-tl-3xl rounded-bl-3xl max-xl:pl-9 py-3 pl-12 pt-[90px]">
           <Image
             className="absolute opacity-60 max-sm:right-[-54%] max-sm:top-[-45%] right-[-56%] max-xl:right-[-40%] max-md:right-[-50%] max-lg:right-[-25%] top-[-63%]"

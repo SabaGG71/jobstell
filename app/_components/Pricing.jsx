@@ -4,6 +4,7 @@ import price from "../../public/price.svg";
 import checkPrice from "../../public/check-price.svg";
 import cancelPrice from "../../public/cancelPrice.svg";
 import arrowRight from "../../public/arrowRight.svg";
+import bgAbsolute from "../../public/bgSvgAbsolute.svg";
 import Link from "next/link";
 
 export default function Pricing() {
@@ -18,7 +19,7 @@ export default function Pricing() {
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       </div>
 
-      <h3 className="text-center mx-auto text-2xl sm:text-[34px] text-secondary-700 mb-12 sm:mb-16">
+      <h3 className="text-center mx-auto text-2xl sm:text-[34px] text-secondary-700 mb-12 sm:mb-[80px]">
         Your Success, Your
         <span className="text-secondary-900 font-semibold"> Plan</span>
       </h3>
@@ -35,7 +36,7 @@ export default function Pricing() {
               free, limited demo.
             </p>
             <div className="flex items-end my-2 pb-8 mb-5 mt-5">
-              <p className="text-2xl sm:text-[34px] font-semibold">0.00$</p>
+              <p className="text-[34px] font-semibold">0.00$</p>
             </div>
 
             <div className="sm:absolute bottom-[5%] left-[2%] xl:left-[5%] mt-4 sm:mt-0">
@@ -91,7 +92,7 @@ export default function Pricing() {
               Unlock additional tools and sessions to boost your confidence.
             </p>
             <div className="flex items-end my-2 pb-8 mb-5 mt-5">
-              <p className="text-2xl sm:text-[34px] font-semibold">5.99$</p>
+              <p className="text-[34px] font-semibold">5.99$</p>
               <span className="text-secondary-500 font-semibold text-base sm:text-lg">
                 / 100 Coins
               </span>
@@ -146,7 +147,7 @@ export default function Pricing() {
               simulations and voice-chat sessions.
             </p>
             <div className="flex items-end my-2 pb-8 mb-5 mt-5">
-              <p className="text-2xl sm:text-[34px] text-primary-500 font-semibold">
+              <p className="text-[34px] text-primary-500 font-semibold">
                 9.99$
               </p>
               <span className="text-secondary-500 font-semibold text-base sm:text-lg">
@@ -169,7 +170,7 @@ export default function Pricing() {
             </div>
           </div>
 
-          <div className="bg-white p-6 gap-5 flex flex-col justify-center rounded-2xl mt-4 sm:mt-0">
+          <div className="bg-white z-10 relative p-6 gap-5 flex flex-col justify-center rounded-2xl mt-4 sm:mt-0">
             {[
               "10 interview questions",
               "feedback on 10 questions",
@@ -203,7 +204,7 @@ export default function Pricing() {
               simulations, and all premium features.
             </p>
             <div className="flex items-end my-2 pb-8 mb-5 mt-5">
-              <p className="text-2xl sm:text-[34px] font-semibold">19.99$</p>
+              <p className="text-[34px] font-semibold">19.99$</p>
               <span className="text-secondary-500 font-semibold text-base sm:text-lg">
                 / 600 Coins
               </span>
