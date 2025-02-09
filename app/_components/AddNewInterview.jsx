@@ -26,9 +26,9 @@ import moment from "moment/moment";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const MAX_RETRIES = 3;
-const TIMEOUT_DURATION = 30000;
-const INITIAL_BACKOFF_DELAY = 1000;
+const MAX_RETRIES = 5;
+const TIMEOUT_DURATION = 60000; // Increased timeout
+const INITIAL_BACKOFF_DELAY = 2000;
 
 export default function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -40,121 +40,177 @@ export default function AddNewInterview() {
   const router = useRouter();
   const { user } = useUser();
 
-  const delay = (retryCount) =>
-    new Promise((resolve) =>
-      setTimeout(resolve, INITIAL_BACKOFF_DELAY * Math.pow(2, retryCount))
-    );
+  // Enhanced delay with jitter for better retry distribution
+  const delay = (retryCount) => {
+    const baseDelay = INITIAL_BACKOFF_DELAY * Math.pow(2, retryCount);
+    const jitter = Math.random() * 1000;
+    return new Promise((resolve) => setTimeout(resolve, baseDelay + jitter));
+  };
 
-  const extractAndParseJSON = (text) => {
-    try {
-      // First, try to find content between code blocks
-      let match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-      let jsonStr = match ? match[1] : text;
+  // Super reliable JSON extractor
+  const extractJSON = (text) => {
+    // Initialize result array
+    let questions = [];
 
-      // Try to find array pattern if the text contains multiple JSON objects
-      const startIdx = jsonStr.indexOf("[");
-      const endIdx = jsonStr.lastIndexOf("]");
-
-      if (startIdx !== -1 && endIdx !== -1) {
-        jsonStr = jsonStr.substring(startIdx, endIdx + 1);
-      }
-
-      // Pre-process the string to handle common JSON formatting issues
-      jsonStr = jsonStr
-        // Remove any comments
-        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
-        // Replace smart quotes
+    // Helper function to clean text
+    const cleanText = (str) => {
+      return str
         .replace(/[\u201C\u201D\u2018\u2019]/g, '"')
-        // Remove newlines and extra spaces
-        .replace(/\s+/g, " ")
-        // Handle trailing commas in objects and arrays
-        .replace(/,(\s*[}\]])/g, "$1")
-        // Fix missing quotes around property names
-        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
-        // Remove escaped quotes within property values
-        .replace(/\\\"/g, '"')
-        // Remove backslashes before normal quotes
-        .replace(/\\'/g, "'")
-        // Remove escaped newlines
-        .replace(/\\n/g, " ")
-        // Remove multiple spaces
-        .replace(/\s+/g, " ")
-        // Fix double quotes within double-quoted strings
-        .replace(/"([^"]*?)"/g, (match, p1) => `"${p1.replace(/"/g, '\\"')}"`)
-        // Remove invalid control characters
-        .replace(/[\x00-\x1F\x7F-\x9F]/g, "")
+        .replace(/[\u2013\u2014]/g, "-")
+        .replace(/[^\x20-\x7E\s]/g, "")
         .trim();
+    };
 
-      // Try parsing the cleaned JSON
-      let parsed;
+    // Multiple extraction strategies
+    const strategies = [
+      // Strategy 1: Try to find JSON in code blocks
+      (text) => {
+        const matches = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+        if (matches) {
+          try {
+            const parsed = JSON.parse(matches[1]);
+            return Array.isArray(parsed) ? parsed : [parsed];
+          } catch {
+            return null;
+          }
+        }
+        return null;
+      },
+
+      // Strategy 2: Try to find array pattern
+      (text) => {
+        try {
+          const arrayMatch = text.match(/\[\s*{[\s\S]*}\s*\]/);
+          if (arrayMatch) {
+            return JSON.parse(arrayMatch[0]);
+          }
+        } catch {
+          return null;
+        }
+        return null;
+      },
+
+      // Strategy 3: Try to find individual objects
+      (text) => {
+        const objects = [];
+        const regex = /{[^{}]*}/g;
+        let match;
+
+        while ((match = regex.exec(text)) !== null) {
+          try {
+            const obj = JSON.parse(match[0]);
+            if (obj.question && obj.answer) {
+              objects.push(obj);
+            }
+          } catch {
+            continue;
+          }
+        }
+        return objects.length > 0 ? objects : null;
+      },
+
+      // Strategy 4: Manual extraction using regex patterns
+      (text) => {
+        const questions = [];
+        // Look for question-answer patterns
+        const pattern =
+          /["']?question["']?\s*:\s*["']([^"']+)["']\s*,\s*["']?answer["']?\s*:\s*["']([^"']+)["']/g;
+        let match;
+
+        while ((match = pattern.exec(text)) !== null) {
+          questions.push({
+            question: cleanText(match[1]),
+            answer: cleanText(match[2]),
+          });
+        }
+        return questions.length > 0 ? questions : null;
+      },
+
+      // Strategy 5: Fallback - extremely aggressive pattern matching
+      (text) => {
+        const questions = [];
+        // Split by clear separation patterns
+        const chunks = text.split(/(?:Question|Q):?\s*/i);
+
+        for (let chunk of chunks) {
+          if (!chunk.trim()) continue;
+
+          // Try to find answer part
+          const answerSplit = chunk.split(/(?:Answer|A):?\s*/i);
+
+          if (answerSplit.length >= 2) {
+            const question = cleanText(answerSplit[0]);
+            const answer = cleanText(
+              answerSplit[1].split(/(?:Question|Q):/i)[0]
+            );
+
+            if (question && answer) {
+              questions.push({ question, answer });
+            }
+          }
+        }
+        return questions.length > 0 ? questions : null;
+      },
+    ];
+
+    // Try all strategies
+    for (const strategy of strategies) {
       try {
-        parsed = JSON.parse(jsonStr);
-      } catch (parseError) {
-        // If parsing fails, try to repair common JSON structural issues
-        jsonStr = jsonStr
-          // Ensure array brackets if missing
-          .replace(/^\s*{/, "[{")
-          .replace(/}\s*$/, "}]")
-          // Fix missing commas between objects
-          .replace(/}\s*{/g, "},{")
-          // Remove any remaining invalid characters
-          .replace(/[^\x20-\x7E]/g, "");
+        const result = strategy(text);
+        if (result && result.length > 0) {
+          // Validate and clean the results
+          const validQuestions = result
+            .map((item) => ({
+              question: cleanText(item.question || ""),
+              answer: cleanText(item.answer || ""),
+            }))
+            .filter(
+              (item) =>
+                item.question.length >= 10 &&
+                item.answer.length >= 20 &&
+                item.question.length < 500 &&
+                item.answer.length < 2000
+            );
 
-        parsed = JSON.parse(jsonStr);
+          if (validQuestions.length > 0) {
+            questions = validQuestions;
+            break;
+          }
+        }
+      } catch (e) {
+        continue;
       }
-
-      // Validate the structure
-      if (!Array.isArray(parsed)) {
-        parsed = [parsed];
-      }
-
-      // Clean and validate each item
-      const validQuestions = parsed
-        .filter((item) => item && typeof item === "object")
-        .map((item) => ({
-          question: String(item.question || "").trim(),
-          answer: String(item.answer || "").trim(),
-        }))
-        .filter((item) => item.question && item.answer);
-
-      if (validQuestions.length === 0) {
-        throw new Error("No valid questions found");
-      }
-
-      return validQuestions;
-    } catch (error) {
-      console.error("JSON parsing error:", error);
-      throw new Error(`JSON parsing failed: ${error.message}`);
     }
+
+    return questions;
   };
 
-  const fetchWithTimeout = async (promise) => {
-    let timeoutId;
-    const timeoutPromise = new Promise((_, reject) => {
-      timeoutId = setTimeout(() => {
-        reject(new Error("Request timed out"));
-      }, TIMEOUT_DURATION);
-    });
-
-    try {
-      const result = await Promise.race([promise, timeoutPromise]);
-      clearTimeout(timeoutId);
-      return result;
-    } catch (error) {
-      clearTimeout(timeoutId);
-      throw error;
-    }
-  };
-
+  // Enhanced API call with retries
   const makeApiCallWithRetries = async (apiCall) => {
+    let lastError = null;
+
     for (let i = 0; i < MAX_RETRIES; i++) {
       try {
-        return await fetchWithTimeout(apiCall());
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(
+            () => reject(new Error("Request timed out")),
+            TIMEOUT_DURATION
+          );
+        });
+
+        const result = await Promise.race([apiCall(), timeoutPromise]);
+        return result;
       } catch (error) {
-        if (i === MAX_RETRIES - 1) throw error;
-        await delay(i);
+        lastError = error;
+        console.warn(`Attempt ${i + 1} failed:`, error);
+
+        if (i < MAX_RETRIES - 1) {
+          await delay(i);
+        }
       }
     }
+
+    throw lastError || new Error("All retry attempts failed");
   };
 
   const handleSubmit = async (e) => {
@@ -163,25 +219,27 @@ export default function AddNewInterview() {
     setError("");
 
     try {
-      const prompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
+      // More detailed prompt with explicit formatting instructions
+      const prompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields "question" and "answer". Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. The last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
 
       const result = await makeApiCallWithRetries(() =>
         chatSession.sendMessage(prompt)
       );
 
       if (!result?.response) {
-        throw new Error("Invalid API response");
+        throw new Error("No response from AI service");
       }
 
       const responseText = result.response.text();
-      const parsedResponse = extractAndParseJSON(responseText);
+      const parsedQuestions = extractJSON(responseText);
 
+      // Save to database with retry logic
       const dbResponse = await makeApiCallWithRetries(() =>
         db
           .insert(JobInterview)
           .values({
             mockJobId: uuidv4(),
-            jsonMockResp: JSON.stringify(parsedResponse),
+            jsonMockResp: JSON.stringify(parsedQuestions),
             jobPosition: jobPostion,
             jobDescription: jobDesc,
             jobExperience: jobExperience,
@@ -199,7 +257,9 @@ export default function AddNewInterview() {
       router.push("/dashboard/interview/" + dbResponse[0].mockJobId);
     } catch (error) {
       console.error("Error details:", error);
-      setError(error.message || "An unexpected error occurred");
+      setError(
+        "Please try again. If the issue persists, try simplifying the job description."
+      );
     } finally {
       setLoading(false);
     }
