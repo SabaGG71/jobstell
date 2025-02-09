@@ -67,7 +67,7 @@ const JobCard = memo(({ item }) => {
           </p>
         </div>
 
-        <p className="my-3 sm:my-4 mb-5 sm:mb-7 text-sm sm:text-lg text-secondary-600 line-clamp-3">
+        <p className="my-3 sm:my-4 mb-5 sm:mb-7 text-sm sm:text-lg leading-7 text-secondary-600 line-clamp-3">
           {item.text || "Job description"}
         </p>
 
@@ -186,7 +186,7 @@ export const InfiniteMovingHrs = ({
       <div
         ref={containerRef}
         className={cn(
-          "scroller relative z-20 max-md:mt-[15px] w-full overflow-hidden",
+          "scroller relative z-20 max-md:mt-[10px] w-full overflow-hidden",
           className
         )}
       >

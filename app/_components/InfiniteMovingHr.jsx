@@ -16,7 +16,7 @@ export function InfiniteMovingHr() {
         />
       </div>
       <div className="text-center justify-center flex items-center">
-        <button className="mt-6 mb-[120px] rounded-full text-secondary-800 box-shadow hover:-translate-y-[3px] text-[16px] font-[400] py-[11px] max-md:text-[14px] max-md:px-4 duration-300 transition-all hover:bg-primary-200 px-6 box-shadow-black flex gap-4 items-center bg-primary-100">
+        <button className="mt-7 mb-[120px] rounded-full text-white border border-secondary-100  box-shadow-orange hover:-translate-y-[3px] text-[16px] font-[400] py-[9px] max-md:text-[14px] max-md:px-4 duration-300 transition-all hover:bg-[#4a2868] px-6 box-shadow-black flex gap-4 items-center bg-[#6e4c89]">
           See All HR Experts
           <Image
             className="w-[18px] h-[18px]"

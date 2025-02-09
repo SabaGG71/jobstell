@@ -5,7 +5,7 @@ import { InfiniteMovingHr } from "./InfiniteMovingHr";
 const HrSection = () => {
   return (
     <>
-      <section className="container max-md:max-w-[90%] mt-[100px] sm:mt-[160px] md:mt-[220px] mb-[20px] sm:mb-[30px] px-4 sm:px-6">
+      <section className="container max-md:max-w-[90%] mt-[100px] sm:mt-[160px] md:mt-[220px] mb-[20px] sm:mb-[15px] px-4 sm:px-6">
         <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-8 lg:gap-4">
           {/* Left Content */}
           <div>
@@ -26,7 +26,7 @@ const HrSection = () => {
             </div>
 
             {/* Hashtags */}
-            <div className="flex flex-wrap gap-3 sm:gap-6 w-full lg:w-auto justify-start lg:justify-end">
+            <div className="flex mt-[3px] flex-wrap gap-3 sm:gap-6 w-full lg:w-auto justify-start lg:justify-end">
               <span className="text-secondary-600 text-[13px] sm:text-[14px] md:text-[15px]">
                 #OurHRPartners
               </span>
