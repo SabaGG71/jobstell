@@ -30,7 +30,7 @@ function EnglishSection() {
         </p>
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-[1px] bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       </div>
-      <h3 className="text-center max-sm:max-w-[90%] mx-auto justify-center items-center text-[34px] text-secondary-700 mb-[80px] max-sm:mb-[60px] max-sm:text-[24px]">
+      <h3 className="text-center max-sm:max-w-[90%] mx-auto justify-center items-center text-[34px] text-secondary-700 mb-[80px] max-sm:mb-[60px] max-sm:text-[23px]">
         AI Voice Assistant – Speak With <br />
         <span className="text-secondary-900 font-[600]"> Confidence</span>
       </h3>
