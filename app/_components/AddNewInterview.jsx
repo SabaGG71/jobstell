@@ -50,38 +50,67 @@ export default function AddNewInterview() {
   // Enhanced JSON parsing function with better error handling
   const parseJsonResponse = (response) => {
     try {
-      // Remove any markdown code block syntax and clean the string
-      let cleanedResponse = response.replace(/```json\s*|\s*```/g, "").trim();
+      // Remove markdown code blocks, newlines, and normalize spaces
+      let cleanedResponse = response
+        .replace(/```json\s*|\s*```/g, "")
+        .replace(/[\u201C\u201D\u2018\u2019]/g, '"') // Replace smart quotes
+        .replace(/\n/g, " ")
+        .trim();
 
-      // Try direct JSON parse first
-      try {
-        return JSON.parse(cleanedResponse);
-      } catch (e) {
-        // If direct parse fails, try more aggressive cleaning
-        cleanedResponse = cleanedResponse
-          .replace(/[\u201C\u201D\u2018\u2019]/g, '"') // Replace smart quotes
-          .replace(/\n/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
+      // Find all possible JSON objects in the response
+      const jsonObjects = [];
+      let depth = 0;
+      let startIndex = -1;
 
-        // Find the first { and last } to extract valid JSON
-        const startIdx = cleanedResponse.indexOf("{");
-        const endIdx = cleanedResponse.lastIndexOf("}") + 1;
-
-        if (startIdx === -1 || endIdx === 0) {
-          throw new Error("No valid JSON object found in response");
+      for (let i = 0; i < cleanedResponse.length; i++) {
+        if (cleanedResponse[i] === "{") {
+          if (depth === 0) {
+            startIndex = i;
+          }
+          depth++;
+        } else if (cleanedResponse[i] === "}") {
+          depth--;
+          if (depth === 0 && startIndex !== -1) {
+            try {
+              const jsonString = cleanedResponse.slice(startIndex, i + 1);
+              const parsed = JSON.parse(jsonString);
+              jsonObjects.push({ parsed, length: jsonString.length });
+            } catch (e) {
+              // Continue searching if this segment isn't valid JSON
+              continue;
+            }
+          }
         }
-
-        const jsonString = cleanedResponse.slice(startIdx, endIdx);
-        const parsed = JSON.parse(jsonString);
-
-        // Validate the expected structure
-        if (!Array.isArray(parsed) && typeof parsed !== "object") {
-          throw new Error("Parsed result is neither an array nor an object");
-        }
-
-        return parsed;
       }
+
+      // If no valid JSON objects found, throw error
+      if (jsonObjects.length === 0) {
+        throw new Error("No valid JSON object found in response");
+      }
+
+      // Get the longest valid JSON object (usually the most complete one)
+      const longestJson = jsonObjects.reduce((prev, current) =>
+        prev.length > current.length ? prev : current
+      );
+
+      // Validate the structure
+      const result = longestJson.parsed;
+      if (!Array.isArray(result) && typeof result !== "object") {
+        throw new Error("Parsed result is neither an array nor an object");
+      }
+
+      // Validate that it contains questions and answers
+      if (Array.isArray(result)) {
+        const isValid = result.every(
+          (item) =>
+            item.hasOwnProperty("question") && item.hasOwnProperty("answer")
+        );
+        if (!isValid) {
+          throw new Error("Invalid question-answer format in response");
+        }
+      }
+
+      return result;
     } catch (error) {
       console.error("JSON Parsing Error:", error);
       throw new Error(`Failed to parse AI response: ${error.message}`);
@@ -126,7 +155,7 @@ export default function AddNewInterview() {
     setLoading(true);
     setError("");
 
-    const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
+    const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in a simple JSON array format where each object has 'question' and 'answer' fields. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
 
     try {
       // Make API call with retries
