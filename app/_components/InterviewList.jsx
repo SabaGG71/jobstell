@@ -23,7 +23,6 @@ export default function InterviewList() {
       )
       .orderBy(desc(JobInterview.id));
 
-    console.log(result);
     setInterviewList(result);
   };
   return (

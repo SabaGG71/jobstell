@@ -26,7 +26,6 @@ import moment from "moment/moment";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-// Configuration constants
 const MAX_RETRIES = 3;
 const TIMEOUT_DURATION = 30000;
 const INITIAL_BACKOFF_DELAY = 1000;
@@ -41,89 +40,99 @@ export default function AddNewInterview() {
   const router = useRouter();
   const { user } = useUser();
 
-  // Helper function for delay with exponential backoff
   const delay = (retryCount) =>
     new Promise((resolve) =>
       setTimeout(resolve, INITIAL_BACKOFF_DELAY * Math.pow(2, retryCount))
     );
 
-  // Enhanced JSON parsing function with better error handling
-  const parseJsonResponse = (response) => {
+  const extractAndParseJSON = (text) => {
     try {
-      // Remove markdown code blocks, newlines, and normalize spaces
-      let cleanedResponse = response
-        .replace(/```json\s*|\s*```/g, "")
-        .replace(/[\u201C\u201D\u2018\u2019]/g, '"') // Replace smart quotes
-        .replace(/\n/g, " ")
+      // First, try to find content between code blocks
+      let match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      let jsonStr = match ? match[1] : text;
+
+      // Try to find array pattern if the text contains multiple JSON objects
+      const startIdx = jsonStr.indexOf("[");
+      const endIdx = jsonStr.lastIndexOf("]");
+
+      if (startIdx !== -1 && endIdx !== -1) {
+        jsonStr = jsonStr.substring(startIdx, endIdx + 1);
+      }
+
+      // Pre-process the string to handle common JSON formatting issues
+      jsonStr = jsonStr
+        // Remove any comments
+        .replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, "")
+        // Replace smart quotes
+        .replace(/[\u201C\u201D\u2018\u2019]/g, '"')
+        // Remove newlines and extra spaces
+        .replace(/\s+/g, " ")
+        // Handle trailing commas in objects and arrays
+        .replace(/,(\s*[}\]])/g, "$1")
+        // Fix missing quotes around property names
+        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":')
+        // Remove escaped quotes within property values
+        .replace(/\\\"/g, '"')
+        // Remove backslashes before normal quotes
+        .replace(/\\'/g, "'")
+        // Remove escaped newlines
+        .replace(/\\n/g, " ")
+        // Remove multiple spaces
+        .replace(/\s+/g, " ")
+        // Fix double quotes within double-quoted strings
+        .replace(/"([^"]*?)"/g, (match, p1) => `"${p1.replace(/"/g, '\\"')}"`)
+        // Remove invalid control characters
+        .replace(/[\x00-\x1F\x7F-\x9F]/g, "")
         .trim();
 
-      // Find all possible JSON objects in the response
-      const jsonObjects = [];
-      let depth = 0;
-      let startIndex = -1;
+      // Try parsing the cleaned JSON
+      let parsed;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch (parseError) {
+        // If parsing fails, try to repair common JSON structural issues
+        jsonStr = jsonStr
+          // Ensure array brackets if missing
+          .replace(/^\s*{/, "[{")
+          .replace(/}\s*$/, "}]")
+          // Fix missing commas between objects
+          .replace(/}\s*{/g, "},{")
+          // Remove any remaining invalid characters
+          .replace(/[^\x20-\x7E]/g, "");
 
-      for (let i = 0; i < cleanedResponse.length; i++) {
-        if (cleanedResponse[i] === "{") {
-          if (depth === 0) {
-            startIndex = i;
-          }
-          depth++;
-        } else if (cleanedResponse[i] === "}") {
-          depth--;
-          if (depth === 0 && startIndex !== -1) {
-            try {
-              const jsonString = cleanedResponse.slice(startIndex, i + 1);
-              const parsed = JSON.parse(jsonString);
-              jsonObjects.push({ parsed, length: jsonString.length });
-            } catch (e) {
-              // Continue searching if this segment isn't valid JSON
-              continue;
-            }
-          }
-        }
+        parsed = JSON.parse(jsonStr);
       }
-
-      // If no valid JSON objects found, throw error
-      if (jsonObjects.length === 0) {
-        throw new Error("No valid JSON object found in response");
-      }
-
-      // Get the longest valid JSON object (usually the most complete one)
-      const longestJson = jsonObjects.reduce((prev, current) =>
-        prev.length > current.length ? prev : current
-      );
 
       // Validate the structure
-      const result = longestJson.parsed;
-      if (!Array.isArray(result) && typeof result !== "object") {
-        throw new Error("Parsed result is neither an array nor an object");
+      if (!Array.isArray(parsed)) {
+        parsed = [parsed];
       }
 
-      // Validate that it contains questions and answers
-      if (Array.isArray(result)) {
-        const isValid = result.every(
-          (item) =>
-            item.hasOwnProperty("question") && item.hasOwnProperty("answer")
-        );
-        if (!isValid) {
-          throw new Error("Invalid question-answer format in response");
-        }
+      // Clean and validate each item
+      const validQuestions = parsed
+        .filter((item) => item && typeof item === "object")
+        .map((item) => ({
+          question: String(item.question || "").trim(),
+          answer: String(item.answer || "").trim(),
+        }))
+        .filter((item) => item.question && item.answer);
+
+      if (validQuestions.length === 0) {
+        throw new Error("No valid questions found");
       }
 
-      return result;
+      return validQuestions;
     } catch (error) {
-      console.error("JSON Parsing Error:", error);
-      throw new Error(`Failed to parse AI response: ${error.message}`);
+      console.error("JSON parsing error:", error);
+      throw new Error(`JSON parsing failed: ${error.message}`);
     }
   };
 
-  // Function to handle API calls with timeout
   const fetchWithTimeout = async (promise) => {
     let timeoutId;
-
     const timeoutPromise = new Promise((_, reject) => {
       timeoutId = setTimeout(() => {
-        reject(new Error("Request timed out after " + TIMEOUT_DURATION + "ms"));
+        reject(new Error("Request timed out"));
       }, TIMEOUT_DURATION);
     });
 
@@ -137,7 +146,6 @@ export default function AddNewInterview() {
     }
   };
 
-  // Function to make API call with retries
   const makeApiCallWithRetries = async (apiCall) => {
     for (let i = 0; i < MAX_RETRIES; i++) {
       try {
@@ -145,7 +153,6 @@ export default function AddNewInterview() {
       } catch (error) {
         if (i === MAX_RETRIES - 1) throw error;
         await delay(i);
-        console.log(`Retry attempt ${i + 1} of ${MAX_RETRIES}`);
       }
     }
   };
@@ -155,22 +162,20 @@ export default function AddNewInterview() {
     setLoading(true);
     setError("");
 
-    const inputPrompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in a simple JSON array format where each object has 'question' and 'answer' fields. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
-
     try {
-      // Make API call with retries
+      const prompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields question and answer. Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
+
       const result = await makeApiCallWithRetries(() =>
-        chatSession.sendMessage(inputPrompt)
+        chatSession.sendMessage(prompt)
       );
 
       if (!result?.response) {
-        throw new Error("Invalid API response format");
+        throw new Error("Invalid API response");
       }
 
-      const mockJsonResp = result.response.text();
-      const parsedResponse = parseJsonResponse(mockJsonResp);
+      const responseText = result.response.text();
+      const parsedResponse = extractAndParseJSON(responseText);
 
-      // Insert into database with retries
       const dbResponse = await makeApiCallWithRetries(() =>
         db
           .insert(JobInterview)
@@ -193,9 +198,8 @@ export default function AddNewInterview() {
       setOpenDialog(false);
       router.push("/dashboard/interview/" + dbResponse[0].mockJobId);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error details:", error);
       setError(error.message || "An unexpected error occurred");
-      alert(error.message || "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -212,7 +216,7 @@ export default function AddNewInterview() {
 
       <Link href="/dashboard/upgrade">Pricing</Link>
 
-      <Dialog open={openDialog}>
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>

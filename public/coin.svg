@@ -1,0 +1,29 @@
+<svg width="243" height="243" viewBox="0 0 243 243" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="121.495" cy="121.495" r="104.995" fill="#FD9C67" stroke="url(#paint0_linear_502_20)" stroke-width="33"/>
+<circle cx="121.495" cy="121.495" r="119.495" stroke="url(#paint1_linear_502_20)" stroke-width="4"/>
+<circle cx="121.496" cy="121.986" r="87.1952" stroke="url(#paint2_linear_502_20)" stroke-width="3"/>
+<path d="M76 135.791C76 152.558 89.8743 166.15 106.989 166.15L106.989 137.348C106.989 120.581 93.1148 106.989 76 106.989L76 135.791Z" fill="white" fill-opacity="0.66"/>
+<path d="M135.161 104.802C135.161 121.569 149.036 135.161 166.15 135.161L166.15 106.359C166.15 89.5922 152.276 76 135.161 76L135.161 104.802Z" fill="white" fill-opacity="0.66"/>
+<path d="M106.359 76C89.5922 76 76 89.8743 76 106.989H104.802C121.569 106.989 135.161 93.1148 135.161 76L106.359 76Z" fill="white" fill-opacity="0.66"/>
+<path d="M137.348 135.161C120.581 135.161 106.989 149.035 106.989 166.15H135.791C152.558 166.15 166.15 152.276 166.15 135.161L137.348 135.161Z" fill="white" fill-opacity="0.66"/>
+<defs>
+<linearGradient id="paint0_linear_502_20" x1="208.613" y1="31.7663" x2="47.8757" y2="217.127" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FD9C67"/>
+<stop offset="0.123016" stop-color="#FF7426"/>
+<stop offset="0.248796" stop-color="#FF813C"/>
+<stop offset="0.482583" stop-color="#FFC7A8"/>
+<stop offset="0.743348" stop-color="#FD9C67"/>
+<stop offset="0.82597" stop-color="#FF7326"/>
+<stop offset="1" stop-color="#FF7728"/>
+</linearGradient>
+<linearGradient id="paint1_linear_502_20" x1="97.5877" y1="-4.12842e-07" x2="127.133" y2="242.989" gradientUnits="userSpaceOnUse">
+<stop stop-color="#E85200"/>
+<stop offset="0.19" stop-color="#FD9C67"/>
+<stop offset="0.961122" stop-color="#FFD0B6"/>
+</linearGradient>
+<linearGradient id="paint2_linear_502_20" x1="99.3589" y1="33.2913" x2="179.44" y2="191.342" gradientUnits="userSpaceOnUse">
+<stop stop-color="#FD9C67"/>
+<stop offset="0.979601" stop-color="#FFC6A6"/>
+</linearGradient>
+</defs>
+</svg>
