@@ -30,7 +30,7 @@ export default function Pricing() {
             <h4 className="font-semibold text-secondary-900 text-2xl sm:text-[27px] pt-6">
               Free Plan
             </h4>
-            <p className="mt-2.5 max-sm:max-w-[90%] text-base text-secondary-500 mb-6">
+            <p className="mt-2.5 max-sm:max-w-[90%] max-xl:max-w-[80%] text-base text-secondary-500 mb-6">
               Get a taste of Jobstell in action — experience our system with a
               free, limited demo.
             </p>
