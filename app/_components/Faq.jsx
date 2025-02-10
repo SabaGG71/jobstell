@@ -40,8 +40,8 @@ const faqData = [
 const FAQItem = ({ question, answer, isOpen, onClick }) => (
   <div className="space-y-2 max-lg:max-w-[90%] mx-auto">
     <div
-      className={`border  hover:bg-primary-50 duration-300 transition-all ${
-        isOpen ? "bg-primary-50" : "bg-secondary-50"
+      className={`border  hover:bg-[#f8f2ff] duration-300 transition-all ${
+        isOpen ? "bg-[#faf5ff]" : "bg-secondary-50"
       } ${
         isOpen ? "border-primary-100" : "border-secondary-100"
       } rounded-3xl overflow-hidden ${isOpen ? "pb-4" : ""}`}
@@ -50,7 +50,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
         className="flex items-center p-6 py-[18px] justify-between cursor-pointer"
         onClick={onClick}
       >
-        <p className="flex-1 max-sm:text-[15px] max-xl:text-[16px] text-[17px] mr-5 md:max-w-[80%] font-[400] text-secondary-700">
+        <p className="flex-1 max-sm:text-[15px] max-xl:text-[16px] text-[17px] mr-5 md:max-w-[80%] max-sm:font-[500] font-[400] text-secondary-700">
           {question}
         </p>
         <div className="flex-shrink-0">
@@ -69,8 +69,8 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
         }`}
       >
         <div className="px-6">
-          <div className="h-px bg-[#efe2ff] w-full my-2"></div>
-          <p className="text-secondary-700 max-xl:text-[15px]  max-sm:text-[14px] px-2 pb-3 leading-6 py-2">
+          <div className="h-px bg-[#efe2ff] w-full my-2 mt-1"></div>
+          <p className="text-secondary-700 max-xl:text-[15px]  max-sm:text-[14px] pb-3 leading-6 py-2">
             {answer}
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function Faq() {
           <Image className="w-5 h-5" src={think} alt="think-svg" />
           FAQ
         </p>
-        <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
+        <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-100 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       </div>
 
       <h3 className="text-center mx-auto leading-[1.4] text-2xl sm:text-[34px] font-[400] text-secondary-900 mb-7 sm:mb-[40px]">

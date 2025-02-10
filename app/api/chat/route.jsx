@@ -8,18 +8,21 @@ export async function POST(req) {
       });
     }
 
-    const response = await fetch("https://jobstell-chatbot.onrender.com/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.JOBSTELL_CHATBOT_API_KEY, // Must be set correctly on your server
-      },
-      body: JSON.stringify({
-        prompt, // Ensure this is not undefined
-        conversationHistory,
-        shouldGreet,
-      }),
-    });
+    const response = await fetch(
+      "https://jobstellchatbot-485935052734.europe-west1.run.app/chat",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.JOBSTELL_CHATBOT_API_KEY, // Must be set correctly on your server
+        },
+        body: JSON.stringify({
+          prompt, // Ensure this is not undefined
+          conversationHistory,
+          shouldGreet,
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorData = await response.json();
