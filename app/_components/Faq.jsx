@@ -57,7 +57,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
           <Image
             src={add}
             alt="add-svg"
-            className={`w-8 h-8 max-sm:w-6 max-md:w-7 max-md:h-7 max-sm:h-6 cursor-pointer bg-secondary-800 box-shadow-black rounded-full transform transition-transform duration-300 ${
+            className={`w-[30px] h-[30px] max-sm:w-6 max-md:w-7 max-md:h-7 max-sm:h-6 cursor-pointer bg-secondary-800 box-shadow-black rounded-full transform transition-transform duration-300 ${
               isOpen ? "rotate-45" : ""
             }`}
           />
