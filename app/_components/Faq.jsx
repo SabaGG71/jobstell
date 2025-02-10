@@ -50,7 +50,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
         className="flex items-center p-6 py-[18px] justify-between cursor-pointer"
         onClick={onClick}
       >
-        <p className="flex-1 max-sm:text-[15px] max-xl:text-[16px] text-[17px] mr-5 max-sm:max-w-[80%] md:max-w-[80%] max-sm:font-[500] font-[400] text-secondary-700">
+        <p className="flex-1 max-sm:text-[16px] max-xl:text-[16px] text-[17px] mr-5 max-sm:max-w-[80%] md:max-w-[80%] font-[400] text-secondary-700">
           {question}
         </p>
         <div className="flex-shrink-0">
