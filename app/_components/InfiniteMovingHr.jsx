@@ -8,7 +8,7 @@ import Image from "next/image";
 export function InfiniteMovingHr() {
   return (
     <>
-      <div className="rounded-md max-w-full flex flex-col antialiased  items-center justify-center relative overflow-hidden">
+      <div className="rounded-[60px] max-w-full flex flex-col antialiased  items-center justify-center relative overflow-hidden">
         <InfiniteMovingHrs
           items={testimonials}
           direction="right"

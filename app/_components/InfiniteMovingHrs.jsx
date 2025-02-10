@@ -15,7 +15,7 @@ const JobCard = memo(({ item }) => {
   };
 
   return (
-    <li className="w-[300px] sm:w-[350px] md:w-[400px] lg:w-[450px] relative rounded-2xl flex-shrink-0 hover:to-primary-50 cursor-pointer duration-300 hover:translate-y-[-5px] transition-all px-4 sm:px-6 py-4 sm:py-6 bg-gradient-to-t from-white to-secondary-50">
+    <li className="w-[300px] sm:w-[350px] md:w-[400px] lg:w-[450px] relative rounded-[30px] flex-shrink-0 hover:to-primary-50 cursor-pointer duration-300 hover:translate-y-[-5px] transition-all px-4 sm:px-6 py-4 sm:py-6 bg-gradient-to-t from-white to-secondary-50">
       <blockquote>
         <div className="flex items-center relative justify-between">
           {/* Company logo image with source validation */}

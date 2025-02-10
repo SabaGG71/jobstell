@@ -5,6 +5,7 @@ import Chatbot from "./_components/Chatbot";
 import Hero from "./_components/Hero";
 import HrSection from "./_components/HrSection";
 import Pricing from "./_components/Pricing";
+import Faq from "./_components/Faq";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <EnglishSection />
       <HrSection />
       <Pricing />
+      <Faq />
       <Chatbot />
     </>
   );

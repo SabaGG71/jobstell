@@ -2,6 +2,7 @@ import Image from "next/image";
 import check2 from "../../public/check-2.svg";
 import price from "../../public/price.svg";
 import checkPrice from "../../public/check-price.svg";
+import coin from "../../public/coin.svg";
 import cancelPrice from "../../public/cancelPrice.svg";
 import arrowRight from "../../public/arrowRight.svg";
 import bgAbsolute from "../../public/bgSvgAbsolute.svg";
@@ -10,10 +11,10 @@ import Link from "next/link";
 export default function Pricing() {
   return (
     <section className="mb-20 mt-16 container flex flex-col justify-center px-4 sm:px-6">
-      <div className="flex container text-base mb-6 text-secondary-600 text-center justify-center items-center">
+      <div className="flex container text-base mb-6 text-secondary-700 text-center justify-center items-center">
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_80%,white_20%,transparent)]" />
         <p className="border flex gap-2 items-center border-secondary-200 text-[15px] px-4 py-1 rounded-full">
-          <Image className="w-4 h-4" src={price} alt="price-svg" />
+          <Image className="w-5 h-5" src={coin} alt="coin-svg" />
           Pricing
         </p>
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
@@ -158,7 +159,7 @@ export default function Pricing() {
             <div className="sm:absolute bottom-[5%] left-[2%] xl:left-[5%] mt-4 sm:mt-0">
               <Link
                 href="/"
-                className="flex duration-300 transition-all hover:bg-primary-600 hover:-translate-y-[3px] cursor-pointer bg-primary-400 box-shadow-black py-2.5 px-5 max-sm:py-2 max-sm:text-[15px] rounded-full text-base font-semibold text-white items-center gap-3 w-fit"
+                className="flex duration-300 transition-all hover:bg-primary-600 hover:-translate-y-[3px] cursor-pointer bg-primary-500 box-shadow-black py-2.5 px-5 max-sm:py-2 max-sm:text-[15px] rounded-full text-base font-semibold text-white items-center gap-3 w-fit"
               >
                 <button>Get Started</button>
                 <Image
