@@ -57,9 +57,9 @@ export default function Hero() {
           <span className="text-primary-600 font-[500]"> skills</span> with
           real-time interview simulations.
         </p>
-        <div className="text-center flex max-lg:flex-row justify-center items-center max-md:mt-[43px] gap-3 mt-7">
+        <div className="text-center flex max-lg:flex-row justify-center items-center max-md:mt-[43px] gap-3 mt-8">
           <Link href="/dashboard">
-            <button className="flex max-sm:px-3 max-md:flex-row max-md:py-[8px] py-[11px] max-md:text-sm hover:translate-y-[-2px] duration-300 transition-all items-center gap-2 bg-gradient-to-b from-primary-400 to-primary-500 hover:bg-primary-600 box-shadow text-white px-[20px] rounded-full font-[400] text-[17px] xl:ml-2">
+            <button className="flex max-sm:px-3 max-md:flex-row max-md:py-[8px] py-[9px] max-md:text-sm hover:translate-y-[-2px] duration-300 transition-all items-center gap-2 bg-gradient-to-b from-primary-400 to-primary-500 hover:bg-primary-600 box-shadow text-white px-[20px] rounded-full font-[400] text-[17px] xl:ml-2">
               Get Started
               <Image
                 width={22}
@@ -70,7 +70,7 @@ export default function Hero() {
               />
             </button>
           </Link>
-          <button className="flex max-sm:px-3 max-md:py-[8px] max-md:px-2 items-center gap-[9px] max-md:text-sm py-[11px] border border-secondary-300 hover:bg-secondary-50 transition-all duration-300 hover:translate-y-[-3px] px-[20px] rounded-full bg-white text-secondary-900 font-[400] text-[17px] max-md:text-[15px]">
+          <button className="flex max-sm:px-3 max-md:py-[8px] max-md:px-2 items-center gap-[9px] max-md:text-sm py-[9px] border border-secondary-300 hover:bg-secondary-50 transition-all duration-300 hover:translate-y-[-3px] px-[20px] rounded-full bg-white text-secondary-900 font-[400] text-[17px] max-md:text-[15px]">
             <Image
               width={19}
               height={19}

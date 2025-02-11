@@ -223,7 +223,7 @@ function Header() {
                 <span
                   className={twMerge(
                     isSignedIn
-                      ? "flex box-shadow-black bg-gradient-to-b from-primary-400 to-primary-500 items-center gap-[11px] hover:bg-primary-600 pr-5 text-white mr-2 py-[7px] px-4 rounded-full font-[400] text-[15px] cursor-pointer duration-200 transition-all"
+                      ? "flex box-shadow-black bg-gradient-to-b from-primary-400 to-primary-500 items-center gap-[11px] hover:bg-primary-700 pr-5 text-white mr-2 py-[6px] hover:-translate-y-[2px] duration-300 transition-all px-4 rounded-full font-[400] text-[15px] cursor-pointer"
                       : "flex box-shadow-black border border-secondary-300 items-center gap-[11px] pr-5 hover:bg-secondary-50 text-secondary-900 py-[5px] px-4 rounded-full font-[400] text-[15px] cursor-pointer hover:translate-y-[-2px] duration-300 transition-all"
                   )}
                 >
@@ -249,7 +249,7 @@ function Header() {
                   <div className="flex items-center">
                     <Popover>
                       <PopoverTrigger asChild>
-                        <div className="flex border border-secondary-200 box-shadow-black hover:bg-secondary-50 duration-300 transition-all h-[38px] pl-[6px] px-4 gap-3 overflow-hidden rounded-full items-center cursor-pointer">
+                        <div className="flex border border-secondary-200 box-shadow-black hover:bg-secondary-50 duration-300 transition-all h-[35px] pl-[6px] px-4 gap-3 overflow-hidden rounded-full items-center cursor-pointer">
                           <div className="overflow-hidden rounded-full block bg-transparent">
                             <Image
                               className="w-[25px] mt-[2px] block box-shadow-black bg-secondary-700 pt-[3px] pb-[4px] rounded-full h-[25px]"
@@ -262,7 +262,7 @@ function Header() {
                           </span>
                           <Image
                             src={down}
-                            className="w-[17px] ml-[4px] h-[17px] opacity-80"
+                            className="w-[12px] ml-[1px] h-[12px] opacity-80"
                             alt="down-arrow"
                             priority
                           />

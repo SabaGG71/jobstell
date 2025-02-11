@@ -50,7 +50,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
         className="flex items-center p-6 py-[18px] justify-between cursor-pointer"
         onClick={onClick}
       >
-        <p className="flex-1 max-sm:text-[16px] max-xl:text-[16px] text-[17px] mr-5 max-sm:max-w-[80%] md:max-w-[80%] font-[400] text-secondary-700">
+        <p className="flex-1 max-sm:text-[16px] font-[400] max-xl:text-[16px] text-[17px] leading-7 mr-5 max-sm:max-w-[80%] md:max-w-[80%] text-secondary-700">
           {question}
         </p>
         <div className="flex-shrink-0">
@@ -87,7 +87,7 @@ export default function Faq() {
   };
 
   return (
-    <section className="overflow-hidden max-md:mt-[150px] mt-[200px] relative mb-[300px]">
+    <section className="overflow-hidden max-md:mt-[150px] mt-[200px] relative max-sm:mb-[120px] mb-[170px]">
       <div className="flex container text-base mb-6 text-secondary-600 text-center justify-center items-center">
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_80%,white_20%,transparent)]" />
         <p className="border flex text-secondary-700 gap-2 items-center border-secondary-100 box-shadow-black text-[15px] px-4 py-[3px] rounded-full">
@@ -97,7 +97,7 @@ export default function Faq() {
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-100 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]" />
       </div>
 
-      <h3 className="text-center mx-auto leading-[1.4] text-2xl sm:text-[34px] font-[400] text-secondary-900 mb-7 sm:mb-[40px]">
+      <h3 className="text-center mx-auto leading-[1.4] text-2xl sm:text-[34px] font-[400] text-secondary-900 mb-7 sm:mb-[65px]">
         Need Help?{" "}
         <span className="font-[400]">
           <span className="text-secondary-700 font-[600]">Jobstell</span> Is

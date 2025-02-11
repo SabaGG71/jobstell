@@ -36,7 +36,7 @@ export default function FeaturesSection() {
         <div className="grid gap-5 max-xl:max-w-[90%] mx-auto grid-cols-1 xl:grid-cols-3">
           <div className="flex flex-col gap-5">
             <div className="bg-[#fbfbfc] border  cursor-pointer hover:bg-secondary-50 hover:-translate-x-[4px]  border-secondary-100 duration-300 rounded-3xl py-4 px-7">
-              <div className="flex max-sm:gap-4 my-[12px] items-center gap-3">
+              <div className="flex max-sm:gap-4 mt-[9px] my-[12px] items-center gap-3">
                 <span className="box-shadow rounded-full">
                   <Image
                     className="bg-primary-400 shadow-box-orange   rounded-full p-[6px] w-[34px] h-auto"
@@ -48,13 +48,13 @@ export default function FeaturesSection() {
                   AI-Powered Interview Simulations
                 </p>
               </div>
-              <p className="text-secondary-600 max-sm:text-[14px] font-[400]">
+              <p className="text-secondary-600 pb-[9px] max-sm:text-[14px] font-[400]">
                 Dedicated professionals with expertise in cutting-edge web
                 design + development.
               </p>
             </div>
             <div className="bg-[#fbfbfc] border  cursor-pointer hover:bg-secondary-50 hover:-translate-x-[4px]  border-secondary-100 duration-300 rounded-3xl py-4 px-7">
-              <div className="flex max-sm:gap-4 my-[12px] items-center gap-3">
+              <div className="flex max-sm:gap-4 mt-[9px] my-[12px] items-center gap-3">
                 <span className="box-shadow rounded-full">
                   <Image
                     className="bg-primary-400 shadow-box-orange   rounded-full p-[6px] w-[34px] max-sm:w-[35px] max-sm:h-[35px] max-sm:p-[7px] h-auto"
@@ -66,13 +66,13 @@ export default function FeaturesSection() {
                   Voice Agent Roleplay
                 </p>
               </div>
-              <p className="text-secondary-600 max-sm:text-[14px] font-[400]">
+              <p className="text-secondary-600 pb-[9px] max-sm:text-[14px] font-[400]">
                 Dedicated professionals with expertise in cutting-edge web
                 design + development.
               </p>
             </div>
             <div className="bg-[#fbfbfc] border border-secondary-100 cursor-pointer hover:bg-secondary-50 hover:-translate-x-[4px] duration-300 transition-all rounded-3xl py-3 px-7">
-              <div className="flex my-4 items-center max-sm:gap-4 gap-3">
+              <div className="flex mt-[9px] my-4 items-center max-sm:gap-4 gap-3">
                 <span className="box-shadow-orange   rounded-full">
                   <Image
                     className="bg-[#fd8341] rounded-full max-sm:p-[6px] p-[7px] max-sm:w-[40px] w-[34px] h-auto"
@@ -84,7 +84,7 @@ export default function FeaturesSection() {
                   Personalized Interview Questions
                 </p>
               </div>
-              <p className="text-secondary-600 max-sm:text-[14px] font-[400]">
+              <p className="text-secondary-600 pb-[9px] max-sm:text-[14px] font-[400]">
                 Dedicated professionals with expertise in cutting-edge web
                 design + development.
               </p>
@@ -99,7 +99,7 @@ export default function FeaturesSection() {
             />
             <div className="flex gap-4">
               <div className="block w-[100px] md:w-[200px] lg:w-[300px] h-[2px] bg-primary-200 transform transition-all duration-300 max-sm:mt-8 [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)] mt-10" />
-              <h3 className="text-[30px] max-sm:text-[24px] font-[600] text-white  mt-4">
+              <h3 className="text-[30px] max-sm:text-[24px] font-[600] text-white mt-4">
                 Jobstell
               </h3>
 
@@ -110,7 +110,7 @@ export default function FeaturesSection() {
             </p>
 
             <div>
-              <div className="grid max-xl:pb-8 mt-5 max-xl:grid-cols-4 max-sm:grid-cols-2 max-lg:grid-cols-2 grid-cols-2 gap-4">
+              <div className="grid max-xl:pb-8 mt-10 max-xl:grid-cols-4 max-sm:grid-cols-2 max-lg:grid-cols-2 grid-cols-2 gap-4">
                 <div className="feature-1 hover:-translate-y-[3px] duration-300 transition-all cursor-pointer relative">
                   <Image
                     className="w-[150px] max-sm:w-[110px] box-shadow-mobile pt-2 box-shadow rounded-3xl  h-auto"
@@ -176,7 +176,7 @@ export default function FeaturesSection() {
           </div>
           <div className="flex flex-col gap-5">
             <div className="bg-[#fbfbfc] border  cursor-pointer hover:bg-secondary-50 hover:-translate-x-[-4px]  border-secondary-100 duration-300 rounded-3xl py-4 px-7">
-              <div className="flex max-sm:gap-4 my-[12px] items-center gap-3">
+              <div className="flex max-sm:gap-4 mt-[9px] my-[12px] items-center gap-3">
                 <span className="box-shadow rounded-full">
                   <Image
                     className="bg-primary-400 box-shadow   rounded-full p-[6px] w-[34px] max-sm:w-[42px] max-sm:h-[33px] max-sm:p-[7px] h-auto"
@@ -188,13 +188,13 @@ export default function FeaturesSection() {
                   Emotional and Psychological Prep
                 </p>
               </div>
-              <p className="text-secondary-600 max-sm:text-[14px] font-[400]">
+              <p className="text-secondary-600 max-sm:text-[14px] font-[400] pb-[9px]">
                 Dedicated professionals with expertise in cutting-edge web
                 design + development.
               </p>
             </div>
             <div className="bg-[#fbfbfc] border  cursor-pointer hover:bg-secondary-50 hover:-translate-x-[-4px]  border-secondary-100 duration-300 rounded-3xl py-4 px-7">
-              <div className="flex max-sm:gap-4 my-[12px] items-center gap-3">
+              <div className="flex max-sm:gap-4 mt-[9px] my-[12px] items-center gap-3">
                 <span className="box-shadow rounded-full">
                   <Image
                     className="bg-[#fd8341] box-shadow-orange   rounded-full p-[6px] w-[34px] max-sm:w-[42px] max-sm:h-[33px] max-sm:p-[7px] h-auto"
@@ -206,13 +206,13 @@ export default function FeaturesSection() {
                   Real-time feedback & corrections
                 </p>
               </div>
-              <p className="text-secondary-600 max-sm:text-[14px] font-[400]">
+              <p className="text-secondary-600 max-sm:text-[14px] font-[400] pb-[9px]">
                 Dedicated professionals with expertise in cutting-edge web
                 design + development.
               </p>
             </div>
             <div className="bg-[#fbfbfc] border  cursor-pointer hover:bg-secondary-50 hover:-translate-x-[-4px]  border-secondary-100 duration-300 rounded-3xl py-4 px-7">
-              <div className="flex max-sm:gap-4 my-[12px] items-center gap-3">
+              <div className="flex max-sm:gap-4 mt-[9px] my-[12px] items-center gap-3">
                 <span className="box-shadow rounded-full">
                   <Image
                     className="bg-primary-400 box-shadow   rounded-full p-[7px] w-[34px] max-sm:w-[33px] max-sm:h-[33px] max-sm:p-[7px] h-auto"
@@ -224,7 +224,7 @@ export default function FeaturesSection() {
                   Role-playing for confidence
                 </p>
               </div>
-              <p className="text-secondary-600 max-sm:text-[14px] font-[400]">
+              <p className="text-secondary-600 max-sm:text-[14px] font-[400] pb-[9px]">
                 Dedicated professionals with expertise in cutting-edge web
                 design + development.
               </p>
