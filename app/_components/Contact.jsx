@@ -30,8 +30,8 @@ export default function Contact() {
             Join Us Today
           </h2>
           <p className="text-secondary-600 leading-7 max-sm:text-[15px] max-sm:max-w-[80%] max-sm:leading-6 text-[17px] max-lg:text-[16px]  lg:max-w-[40%] max-md:max-w-[70%] max-lg:max-w-[60%] xl:max-w-[40%] mx-auto mt-4 max-xl:mt-0">
-            Take the first step towards enhanced productivity — sign up now and
-            start your free trial with Clever.
+            Take charge of your productivity — sign up now and start your free
+            trial with JobStell.
           </p>
           <div className="items-center max-md:hidden mt-[35px] sm:mt-[44px] justify-center gap-4 flex flex-row max-md:flex-col">
             <div>
