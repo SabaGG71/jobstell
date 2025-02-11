@@ -27,8 +27,11 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const MAX_RETRIES = 5;
-const TIMEOUT_DURATION = 60000; // Increased timeout
+const TIMEOUT_DURATION = 60000;
 const INITIAL_BACKOFF_DELAY = 2000;
+const REQUIRED_QUESTION_COUNT =
+  Number(process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT) || 20;
+const MAX_GENERATION_ATTEMPTS = 3;
 
 export default function AddNewInterview() {
   const [openDialog, setOpenDialog] = useState(false);
@@ -40,19 +43,15 @@ export default function AddNewInterview() {
   const router = useRouter();
   const { user } = useUser();
 
-  // Enhanced delay with jitter for better retry distribution
   const delay = (retryCount) => {
     const baseDelay = INITIAL_BACKOFF_DELAY * Math.pow(2, retryCount);
     const jitter = Math.random() * 1000;
     return new Promise((resolve) => setTimeout(resolve, baseDelay + jitter));
   };
 
-  // Super reliable JSON extractor
   const extractJSON = (text) => {
-    // Initialize result array
     let questions = [];
 
-    // Helper function to clean text
     const cleanText = (str) => {
       return str
         .replace(/[\u201C\u201D\u2018\u2019]/g, '"')
@@ -61,7 +60,6 @@ export default function AddNewInterview() {
         .trim();
     };
 
-    // Multiple extraction strategies
     const strategies = [
       // Strategy 1: Try to find JSON in code blocks
       (text) => {
@@ -112,7 +110,6 @@ export default function AddNewInterview() {
       // Strategy 4: Manual extraction using regex patterns
       (text) => {
         const questions = [];
-        // Look for question-answer patterns
         const pattern =
           /["']?question["']?\s*:\s*["']([^"']+)["']\s*,\s*["']?answer["']?\s*:\s*["']([^"']+)["']/g;
         let match;
@@ -129,13 +126,11 @@ export default function AddNewInterview() {
       // Strategy 5: Fallback - extremely aggressive pattern matching
       (text) => {
         const questions = [];
-        // Split by clear separation patterns
         const chunks = text.split(/(?:Question|Q):?\s*/i);
 
         for (let chunk of chunks) {
           if (!chunk.trim()) continue;
 
-          // Try to find answer part
           const answerSplit = chunk.split(/(?:Answer|A):?\s*/i);
 
           if (answerSplit.length >= 2) {
@@ -158,7 +153,6 @@ export default function AddNewInterview() {
       try {
         const result = strategy(text);
         if (result && result.length > 0) {
-          // Validate and clean the results
           const validQuestions = result
             .map((item) => ({
               question: cleanText(item.question || ""),
@@ -185,7 +179,6 @@ export default function AddNewInterview() {
     return questions;
   };
 
-  // Enhanced API call with retries
   const makeApiCallWithRetries = async (apiCall) => {
     let lastError = null;
 
@@ -213,33 +206,64 @@ export default function AddNewInterview() {
     throw lastError || new Error("All retry attempts failed");
   };
 
+  const generateQuestions = async () => {
+    const prompt = `Generate exactly ${REQUIRED_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields "question" and "answer". Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. The last 5 questions must be non-technical interview questions that HRs might ask on an interview. Important: You must return exactly ${REQUIRED_QUESTION_COUNT} questions, no more and no less.`;
+
+    const result = await makeApiCallWithRetries(() =>
+      chatSession.sendMessage(prompt)
+    );
+
+    if (!result?.response) {
+      throw new Error("No response from AI service");
+    }
+
+    const responseText = result.response.text();
+    const parsedQuestions = extractJSON(responseText);
+
+    console.log(
+      `Generated ${parsedQuestions.length} questions out of ${REQUIRED_QUESTION_COUNT} required:`,
+      parsedQuestions
+    );
+
+    return parsedQuestions;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
-      // More detailed prompt with explicit formatting instructions
-      const prompt = `Analyze the following details to generate ${process.env.NEXT_PUBLIC_INTERVIEW_QUESTION_COUNT} high-quality, realistic interview questions that are appropriate for the specified job position, job description, and years of experience. Focus on asking mostly technical questions relevant to the role, ensuring that the candidate can visualize what they might encounter in a real interview. Ask about the most important technical and problem-solving aspects of the job role while keeping in mind the candidate's level of experience. Return the result in JSON format with each question and answer pair provided under the fields "question" and "answer". Answers must be detailed and have all the most important information in it, but it should be around 100-150 words, depending on the question. Details: Job Position: ${jobPostion} Job Description: ${jobDesc}. Years of Experience: ${jobExperience}. Ensure the questions cover a range of topics, including technical concepts, problem-solving, debugging, practical coding scenarios, and general web development principles. The last 5 questions must be non-technical interview questions that HRs might ask on an interview.`;
+      let questions = [];
+      let attempts = 0;
 
-      const result = await makeApiCallWithRetries(() =>
-        chatSession.sendMessage(prompt)
-      );
+      while (attempts < MAX_GENERATION_ATTEMPTS) {
+        questions = await generateQuestions();
 
-      if (!result?.response) {
-        throw new Error("No response from AI service");
+        if (questions.length === REQUIRED_QUESTION_COUNT) {
+          break;
+        }
+
+        console.log(
+          `Attempt ${attempts + 1}: Generated ${
+            questions.length
+          } questions, retrying...`
+        );
+        attempts++;
+
+        if (attempts === MAX_GENERATION_ATTEMPTS) {
+          throw new Error(
+            `Failed to generate ${REQUIRED_QUESTION_COUNT} questions after ${MAX_GENERATION_ATTEMPTS} attempts`
+          );
+        }
       }
 
-      const responseText = result.response.text();
-      const parsedQuestions = extractJSON(responseText);
-
-      // Save to database with retry logic
       const dbResponse = await makeApiCallWithRetries(() =>
         db
           .insert(JobInterview)
           .values({
             mockJobId: uuidv4(),
-            jsonMockResp: JSON.stringify(parsedQuestions),
+            jsonMockResp: JSON.stringify(questions),
             jobPosition: jobPostion,
             jobDescription: jobDesc,
             jobExperience: jobExperience,
