@@ -166,6 +166,7 @@ export default function Chatbot() {
       {/* Chatbot Icon */}
       {!isChatVisible && (
         <button
+          className="bg-primary-500 box-shadow"
           onClick={toggleChatVisibility}
           style={{
             position: "fixed",
@@ -174,7 +175,7 @@ export default function Chatbot() {
             width: "60px",
             height: "60px",
             borderRadius: "50%",
-            backgroundColor: "#007bff",
+
             color: "white",
             border: "none",
             fontSize: "24px",

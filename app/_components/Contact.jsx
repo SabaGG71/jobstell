@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function Contact() {
   return (
-    <section className="max-w-[1200px] mx-auto overflow-hidden relative mb-[300px]">
+    <section className="max-w-[1200px] mx-auto overflow-hidden relative">
       <div className="bg-[#F9F4FF] max-xl:max-w-[90%] overflow-hidden max-md:max-w-[90%] mx-auto relative rounded-[42px] max-sm:h-[400px] h-[440px] w-full">
         <Image
           className="absolute max-sm:w-[160px] max-xl:w-[250px] max-lg:w-[200px] right-[-1%] bottom-0"

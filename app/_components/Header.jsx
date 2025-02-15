@@ -12,13 +12,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../../components/ui/popover";
-import logo from "../../public/logo.svg";
 import callWhite from "../../public/call-white.svg";
 import contactSVG from "../../public/contact-svg.svg";
 import signIn from "../../public/sign-in.svg";
 import logout from "../../public/logout.svg";
 import userSVG from "../../public/userSvg.svg";
 import down from "../../public/downArrow.svg";
+import Logo from "../_components/Logo";
 
 // Pre-define navigation links outside the component.
 const navigationLinks = [
@@ -114,16 +114,7 @@ function Header() {
           {/* Main Header Content */}
           <div className="flex justify-between py-2 px-3 items-center sm:pr-3">
             {/* Logo */}
-            <Link href="/">
-              <Image
-                quality={100}
-                width={125}
-                height={125}
-                src={logo}
-                alt="logo"
-                priority
-              />
-            </Link>
+            <Logo />
 
             {/* Desktop Navigation */}
             <div className="lg:flex flex-1 justify-left text-sm items-center hidden">

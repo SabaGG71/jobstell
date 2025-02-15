@@ -7,6 +7,7 @@ import HrSection from "./_components/HrSection";
 import Pricing from "./_components/Pricing";
 import Faq from "./_components/Faq";
 import Contact from "./_components/Contact";
+import Footer from "./_components/Footer";
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
       <Pricing />
       <Faq />
       <Contact />
+      <Footer />
       <Chatbot />
     </>
   );

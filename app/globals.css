@@ -189,6 +189,17 @@
   border-radius: 15px;
   background: linear-gradient(90deg, #7a0ef50f 0%, rgba(246, 240, 254, 1) 100%);
 }
+@media (min-width: 768px) {
+  .box-shadow-desktop {
+    box-shadow: rgba(255, 255, 255, 0.28) 4px 4px 18px 0px inset,
+      #a054f735 0px 0.48175px 2.40875px -0.833333px,
+      #a054f735 0px 1.83083px 9.15413px -1.66667px,
+      #a054f735 0px 8px 40px -2.5px,
+      #a054f735 0px -0.48175px 2.40875px -0.833333px,
+      #a054f735 0px -1.83083px 9.15413px -1.66667px,
+      #a054f735 0px -8px 40px -2.5px;
+  }
+}
 .bg-scroller-2 {
   border-left: 8px solid #a354ff;
   border-radius: 15px;
