@@ -149,7 +149,7 @@ const Footer = () => {
           <div className="block w-full max-md:mt-12 mt-16 mb-9 h-px bg-secondary-200 max-md:bg-p transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_50%,white_40%,transparent)]" />
 
           {/* Footer Bottom */}
-          <div className="flex pl-5 flex-col md:flex-row items-start justify-start md:justify-center w-full md:gap-0">
+          <div className="flex pl-5 mb-1 flex-col md:flex-row items-start justify-start md:justify-center w-full md:gap-0">
             <div className="flex flex-col md:flex-row items-start md:items-center md:gap-[6px] w-full md:w-auto">
               {/* Mobile Layout - First Line */}
               <div className="flex items-center gap-2 mb-2 md:mb-0">
