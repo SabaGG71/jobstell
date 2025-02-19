@@ -190,7 +190,7 @@ const Footer = () => {
                     href="/"
                     className="font-[400] box-shadow-desktop  md:bg-purple-500 md:hover:bg-purple-600 duration-300 transition-all md:px-3 max-md:underline md:py-[3px] rounded-full max-md:text-secondary-900 md:text-white text-[14px] lg:text-base"
                   >
-                    Alesphere
+                    Alsphere
                   </Link>
                 </div>
               </div>

@@ -211,7 +211,8 @@ function Header() {
               {/* Desktop Menu */}
               <div className="lg:flex hidden items-center">
                 {/* Contact Button */}
-                <span
+                <Link
+                  href="/contact"
                   className={twMerge(
                     isSignedIn
                       ? "flex box-shadow-black bg-gradient-to-b from-primary-400 to-primary-500 items-center gap-[11px] hover:bg-primary-700 pr-5 text-white mr-2 py-[6px] hover:-translate-y-[2px] duration-300 transition-all px-4 rounded-full font-[400] text-[15px] cursor-pointer"
@@ -234,7 +235,7 @@ function Header() {
                     />
                   )}
                   Contact
-                </span>
+                </Link>
 
                 {isSignedIn ? (
                   <div className="flex items-center">
