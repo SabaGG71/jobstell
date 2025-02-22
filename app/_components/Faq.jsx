@@ -50,7 +50,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }) => (
         className="flex items-center p-6 py-[18px] justify-between cursor-pointer"
         onClick={onClick}
       >
-        <p className="flex-1 max-sm:text-[16px] font-[400] max-xl:text-[16px] text-[17px] leading-7 mr-5 max-sm:max-w-[80%] md:max-w-[80%] text-secondary-700">
+        <p className="flex-1 max-sm:text-[15px] font-[400] max-xl:text-[16px] text-[17px] leading-7 max-sm:leading-[24px] mr-5 max-sm:max-w-[80%] md:max-w-[80%] text-secondary-700">
           {question}
         </p>
         <div className="flex-shrink-0">
@@ -135,7 +135,7 @@ export default function Faq() {
         </div>
 
         <div className="flex mt-12 gap-6 items-center justify-center">
-          <div className="flex max-sm:flex-col max-sm:rounded-[30px] max-sm:p-5 bg-primary-50 border border-primary-100 py-[10px] px-[11px] rounded-full items-center gap-3">
+          <div className="flex max-sm:flex-col max-sm:rounded-[20px] max-sm:p-5 bg-primary-50 max-md:box-shadow-black border border-primary-100 py-[10px] px-[11px] rounded-full items-center gap-3">
             <Image
               className="w-6 h-6 max-md:w-5 max-md:h-5 mr-[2px] ml-[6px]"
               src={help}
