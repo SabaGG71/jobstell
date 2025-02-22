@@ -46,6 +46,15 @@
     transparent
   );
 }
+.masky-form {
+  mask-image: linear-gradient(
+    to top,
+    transparent,
+    #03040a 12%,
+    #03040a 100%,
+    transparent
+  );
+}
 @media (min-width: 1280px) {
   .masky-2 {
     mask-image: linear-gradient(to bottom, #03040a, #03040a 65%, transparent);
@@ -235,6 +244,16 @@ button {
     box-shadow: rgba(50, 50, 93, 0.064) 0px 50px 100px -20px,
       rgba(0, 0, 0, 0.153) 0px 30px 60px -30px;
   }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #faf5ff inset !important;
+  border: 1px solid #d8b4fe;
+  /* ან */
+  -webkit-box-shadow: 0 0 0 30px rgb(243 232 255) inset !important; /* purple-50 */
 }
 
 @keyframes scroll {

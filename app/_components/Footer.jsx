@@ -8,7 +8,7 @@ import circular from "../../public/circular.svg";
 const Footer = () => {
   return (
     <div className="w-full">
-      <footer className="pt-12 overflow-hidden mt-[150px] bg-gray-50 relative mx-auto">
+      <footer className="pt-12 overflow-hidden bg-gray-50 relative mx-auto">
         {/* Background circular decoration */}
         <Image
           src={circular}

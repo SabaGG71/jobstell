@@ -10,7 +10,7 @@ import Link from "next/link";
 
 export default function Pricing() {
   return (
-    <section className="mb-20 mt-16 container flex flex-col justify-center px-4 sm:px-6">
+    <section className="mb-[200px] mt-16 container flex flex-col justify-center px-4 sm:px-6">
       <div className="flex container text-base mb-6 text-secondary-700 text-center justify-center items-center">
         <div className="hidden md:block w-0 md:w-[200px] lg:w-[300px] h-px bg-secondary-200 transform transition-all duration-300 [mask-image:linear-gradient(to_right,transparent,white_80%,white_20%,transparent)]" />
         <p className="border flex gap-2 items-center border-secondary-200 text-[15px] px-4 py-1 rounded-full">
