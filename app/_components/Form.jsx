@@ -77,7 +77,7 @@ export default function Form() {
   };
 
   return (
-    <section className="max-w-[100%] mx-auto relative mb-20 px-4 sm:px-6 lg:px-8">
+    <section className="xl:w-[630px] max-xl:max-w-[100%] mx-auto relative mb-20 px-4 sm:px-6 lg:px-8">
       {/* <div className="absolute overflow-hidden right-[-5%] bottom-[20%] rounded-[70px] rotate-45 bg-primary-100 w-[300px] h-[300px]">
         <DotBackgroundDemo2 />
       </div>
