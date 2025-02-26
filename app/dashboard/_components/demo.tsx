@@ -17,17 +17,23 @@ const plans = [
     name: "Starter",
     price: { monthly: 15, yearly: 144 },
     level: "starter",
+    icon: "/icons/starter-icon.svg", // Add a path to your icon
+    description: "Perfect for individuals and small teams getting started.",
   },
   {
     name: "Pro",
     price: { monthly: 49, yearly: 470 },
     level: "pro",
     popular: true,
+    icon: "/icons/pro-icon.svg", // Add a path to your icon
+    description: "Advanced features for growing businesses and teams.",
   },
   {
     name: "Enterprise",
     price: { monthly: 99, yearly: 990 },
     level: "all",
+    icon: "/icons/enterprise-icon.svg", // Add a path to your icon
+    description: "Complete solution for large organizations with custom needs.",
   },
 ];
 
