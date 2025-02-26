@@ -1,9 +1,7 @@
-// Sidebar.jsx
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
 import {
-  Home,
   User,
   Video,
   FileQuestion,
@@ -20,8 +18,10 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import profile from "../../../public/portraitHr.png";
+import { usePathname, useRouter } from "next/navigation";
 
-// Add this CSS either in your globals.css or create a new Sidebar.css file
+// Styles remain the same...
 const styles = `
 .ios-scrollbar::-webkit-scrollbar {
   width: 8px;
@@ -76,19 +76,23 @@ const styles = `
 
 const MOBILE_BREAKPOINT = 1024;
 const TABLET_BREAKPOINT = 768;
+const DEFAULT_PATH = "/dashboard/myAccount";
 
 const navigationConfig = {
   quickActions: [
-    { icon: <Bell size={18} />, title: "Alerts", action: () => {} },
-    { icon: <Settings size={18} />, title: "Settings", action: () => {} },
+    { icon: <Bell size={18} />, title: "Alerts", path: "/alerts" },
+    { icon: <Settings size={18} />, title: "Settings", path: "/settings" },
   ],
   mainMenu: [
-    { icon: <Home size={20} />, title: "Home", path: "/" },
-    { icon: <User size={20} />, title: "My Account", path: "/account" },
+    {
+      icon: <User size={20} />,
+      title: "My Account",
+      path: "/dashboard/myAccount",
+    },
     {
       icon: <Video size={20} />,
       title: "Interview Simulation",
-      path: "/interview",
+      path: "/dashboard",
     },
     { icon: <FileQuestion size={20} />, title: "Quiz", path: "/quiz" },
     {
@@ -96,7 +100,11 @@ const navigationConfig = {
       title: "Get Certificate",
       path: "/certificate",
     },
-    { icon: <Coins size={20} />, title: "Pricing", path: "/pricing" },
+    {
+      icon: <Coins size={20} />,
+      title: "Buy Coins",
+      path: "/dashboard/pricing",
+    },
     { icon: <Users size={20} />, title: "HR List", path: "/hr-list" },
   ],
   voiceChat: [
@@ -108,14 +116,23 @@ const navigationConfig = {
 };
 
 const Sidebar = () => {
+  const pathname = usePathname();
+  const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
   const [isOpen, setIsOpen] = useState(true);
   const [isVoiceChatOpen, setIsVoiceChatOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState("Home");
+
+  // Handle initial redirect only once
+  useEffect(() => {
+    const isFirstVisit = !sessionStorage.getItem("hasVisited");
+    if (isFirstVisit && pathname === "/") {
+      sessionStorage.setItem("hasVisited", "true");
+      router.push(DEFAULT_PATH);
+    }
+  }, [pathname, router]);
 
   useEffect(() => {
-    // Inject styles
     const styleSheet = document.createElement("style");
     styleSheet.innerText = styles;
     document.head.appendChild(styleSheet);
@@ -172,13 +189,21 @@ const Sidebar = () => {
     }
   }, [isMobile, isOpen]);
 
-  const handleNavItemClick = (title) => {
-    setActiveItem(title);
-    if (isMobile) setIsOpen(false);
+  const handleMobileClick = () => {
+    if (isMobile) {
+      setIsOpen(false);
+    }
+  };
+
+  const isPathActive = (path) => {
+    if (path === "/") {
+      return pathname === "/";
+    }
+    return pathname === path;
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-[100%] relative bg-gray-50">
       {isMobile && isOpen && (
         <div
           className="fixed inset-0 bg-black/20 backdrop-blur-[3px] z-40 transition-opacity duration-300"
@@ -194,9 +219,10 @@ const Sidebar = () => {
         ${isMobile && !isOpen ? "-translate-x-full" : "translate-x-0"}
         ${isTablet ? "w-72" : ""}
         overflow-hidden`}
+        style={{ height: "100vh" }}
       >
         <div className="h-20 flex items-center px-8 border-b border-gray-100">
-          <div className="relative w-32 h-8">
+          <Link href="/" className="relative w-32 h-8">
             <Image
               src="/logo.svg"
               alt="logo"
@@ -204,7 +230,7 @@ const Sidebar = () => {
               className="object-contain"
               priority
             />
-          </div>
+          </Link>
           {(isMobile || isTablet) && (
             <button
               onClick={() => setIsOpen(false)}
@@ -217,27 +243,40 @@ const Sidebar = () => {
 
         <div className="flex flex-col h-[calc(100vh-5rem)]">
           <div
-            className="flex-1 p-6 ios-scrollbar"
+            className="flex-1 p-6 ios-scrollbar overflow-y-auto"
             style={{
               paddingRight: "12px",
+              height: "calc(100vh - 5rem - 96px)", // Subtracting header height and footer height
             }}
           >
             <div className="flex gap-3 mb-8">
               {navigationConfig.quickActions.map((action, index) => (
-                <button
+                <Link
                   key={index}
-                  onClick={action.action}
-                  className="flex-1 flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 rounded-2xl py-3 text-gray-700 transition-all duration-200 group"
+                  href={action.path}
+                  className={`flex-1 flex items-center justify-center gap-2 rounded-2xl py-3 transition-all duration-200 group
+                    ${
+                      isPathActive(action.path)
+                        ? "bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 text-white"
+                        : "bg-gray-50 hover:bg-gray-100 text-gray-700"
+                    }`}
+                  onClick={handleMobileClick}
                 >
-                  <span className="group-hover:text-gray-900 transition-colors">
+                  <span
+                    className={
+                      isPathActive(action.path)
+                        ? "text-white"
+                        : "group-hover:text-gray-900"
+                    }
+                  >
                     {action.icon}
                   </span>
                   <span className="text-sm">{action.title}</span>
-                </button>
+                </Link>
               ))}
             </div>
 
-            <div className="mb-8">
+            <div>
               <p className="px-3 mb-3 text-xs font-medium text-gray-400 uppercase tracking-wider">
                 Main Menu
               </p>
@@ -248,23 +287,20 @@ const Sidebar = () => {
                     icon={item.icon}
                     title={item.title}
                     path={item.path}
-                    isActive={activeItem === item.title}
-                    onClick={() => handleNavItemClick(item.title)}
+                    isActive={isPathActive(item.path)}
+                    onClick={handleMobileClick}
                   />
                 ))}
               </nav>
             </div>
 
             <div className="mb-8">
-              <p className="px-3 mb-3 text-xs font-medium text-gray-400 uppercase tracking-wider">
-                AI Features
-              </p>
               <div className="relative">
                 <button
                   onClick={() => setIsVoiceChatOpen(!isVoiceChatOpen)}
                   className={`w-full flex items-center px-4 py-3 rounded-2xl transition-all duration-200
                     ${
-                      isVoiceChatOpen
+                      pathname.startsWith("/voice-chat")
                         ? "bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 text-white shadow-sm"
                         : "hover:bg-gray-50 text-gray-700"
                     }`}
@@ -285,8 +321,13 @@ const Sidebar = () => {
                       <Link
                         key={index}
                         href={option.path}
-                        className="block px-4 py-2.5 text-sm rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200"
-                        onClick={() => isMobile && setIsOpen(false)}
+                        onClick={handleMobileClick}
+                        className={`block w-full text-left px-4 py-2.5 text-sm rounded-lg transition-colors duration-200
+                          ${
+                            isPathActive(option.path)
+                              ? "bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 text-white"
+                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                          }`}
                       >
                         {option.title}
                       </Link>
@@ -297,20 +338,20 @@ const Sidebar = () => {
             </div>
           </div>
 
-          <div className="sticky bottom-0 bg-white pt-6 px-6 pb-6 border-t border-gray-100">
-            <div className="p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 group">
+          <div className="bg-white pt-6 px-6 pb-6 border-t border-gray-100">
+            <div className="p-4 relative rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 group">
               <div className="flex items-center gap-3">
-                <div className="relative flex-shrink-0">
-                  <img
-                    src="/api/placeholder/40/40"
+                <div className="relative bg-white rounded-full overflow-hidden flex-shrink-0">
+                  <Image
+                    src={profile}
                     alt="User Profile"
-                    className="w-10 h-10 rounded-full ring-2 ring-white"
+                    className="w-[45px] relative bottom-[-5px] h-[45px] object-cover rounded-full"
                   />
-                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-white"></div>
                 </div>
+                <div className="absolute bottom-[15px] left-[50px] w-2.5 h-2.5 bg-green-500 rounded-full ring-2 ring-white"></div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    Brooklyn Simmons
+                    Sophie Stella
                   </p>
                   <p className="text-xs text-gray-500 truncate">
                     simmons@gmail.com
@@ -341,12 +382,7 @@ const Sidebar = () => {
           ${isTablet && isOpen ? "ml-72" : ""}
         `}
       >
-        <div className="p-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-4">
-            Welcome Back!
-          </h1>
-          <p className="text-gray-600">Your main content goes here...</p>
-        </div>
+        {" "}
       </div>
     </div>
   );
@@ -356,7 +392,7 @@ const NavItem = ({ icon, title, path, isActive, onClick }) => (
   <Link
     href={path}
     onClick={onClick}
-    className={`flex items-center px-4 py-3 rounded-2xl transition-all duration-200 group
+    className={`w-full flex items-center px-4 py-3 rounded-2xl transition-all duration-200 group
       ${
         isActive
           ? "bg-gradient-to-r from-primary-400 via-primary-500 to-primary-400 text-white shadow-sm"

@@ -10,6 +10,9 @@
   background-color: #a354ff;
   color: #fff;
 }
+html {
+  scroll-behavior: smooth;
+}
 .box-shadow-orange {
   box-shadow: rgba(255, 255, 255, 0.28) 4px 4px 18px 0px inset,
     #fd834169 0px 0.48175px 2.40875px -0.833333px,
@@ -380,6 +383,15 @@ input:-webkit-autofill:active {
 @layer base {
   * {
     @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
