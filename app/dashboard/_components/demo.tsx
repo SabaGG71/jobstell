@@ -1,15 +1,15 @@
 import { PricingTable } from "./pricing-table";
 
 const features = [
-  { name: "Basic Analytics", included: "starter" },
-  { name: "Up to 5 team members", included: "starter" },
-  { name: "Basic support", included: "starter" },
-  { name: "Advanced Analytics", included: "pro" },
-  { name: "Up to 20 team members", included: "pro" },
-  { name: "Priority support", included: "pro" },
-  { name: "Custom integrations", included: "all" },
-  { name: "Unlimited team members", included: "all" },
-  { name: "24/7 phone support", included: "all" },
+  { name: "Basic Analytics", planType: "starter", duration: "all" },
+  { name: "Up to 5 team members", planType: "starter", duration: "all" },
+  { name: "Basic support", planType: "starter", duration: "all" },
+  { name: "Advanced Analytics", planType: "pro", duration: "all" },
+  { name: "Up to 20 team members", planType: "pro", duration: "all" },
+  { name: "Priority support", planType: "pro", duration: "all" },
+  { name: "Custom integrations", planType: "all", duration: "all" },
+  { name: "Unlimited team members", planType: "all", duration: "all" },
+  { name: "24/7 phone support", planType: "all", duration: "all" },
 ];
 
 const plans = [
